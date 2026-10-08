@@ -4,6 +4,12 @@ night-light-schedule-automatic=false
 
 [plugins/media-keys]
 custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+email=['<Super>e']
+home=['<Super>f']
+rotate-video-lock-static=@as []
+screensaver=['<Super>Escape']
+terminal=['<Super>t']
+www=['<Super>b']
 
 [plugins/media-keys/custom-keybindings/custom0]
 binding='<Shift><Super>h'

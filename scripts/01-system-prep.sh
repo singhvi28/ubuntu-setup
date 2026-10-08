@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> [1/9] System Preparation & Kernel/Sysctl Tuning"
+echo "==> [1/9] System Preparation, Kernel/Sysctl Tuning & Power Optimization"
 
 # 1. Update package database
 sudo apt update
 
 # 2. Install base essentials
-sudo apt install -y curl wget git gpg ca-certificates software-properties-common apt-transport-https build-essential
+sudo apt install -y curl wget git gpg ca-certificates software-properties-common apt-transport-https build-essential iw dmidecode
 
 # 3. Apply sysctl optimizations (Swappiness & Network TTL)
 echo "==> Applying sysctl optimizations (swappiness=20, TTL=65)..."
@@ -15,7 +15,17 @@ sudo cp "$(dirname "$0")/../configs/sysctl/99-swappiness.conf" /etc/sysctl.d/99-
 sudo cp "$(dirname "$0")/../configs/sysctl/99-network-ttl.conf" /etc/sysctl.d/99-network-ttl.conf
 sudo sysctl --system
 
-# 4. Optional: Remove Snapd and install Flatpak (Mirroring current setup)
+# 4. Optional: auto-cpufreq (Battery & Thermal Optimization for Laptops)
+read -p "Do you want to install auto-cpufreq for automatic CPU frequency/battery optimization? [y/N]: " -r INSTALL_AUTOCPU
+if [[ "$INSTALL_AUTOCPU" =~ ^[Yy]$ ]]; then
+    echo "==> Installing auto-cpufreq..."
+    TEMP_DIR=$(mktemp -d)
+    git clone https://github.com/AdnanHodzic/auto-cpufreq.git "$TEMP_DIR/auto-cpufreq"
+    (cd "$TEMP_DIR/auto-cpufreq" && sudo ./auto-cpufreq-installer --install)
+    rm -rf "$TEMP_DIR"
+fi
+
+# 5. Optional: Remove Snapd and install Flatpak
 read -p "Do you want to completely remove snapd and configure Flatpak + Flathub? [y/N]: " -r REMOVE_SNAP
 if [[ "$REMOVE_SNAP" =~ ^[Yy]$ ]]; then
     echo "==> Removing Snapd..."

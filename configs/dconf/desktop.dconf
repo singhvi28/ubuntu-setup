@@ -191,7 +191,22 @@ idle-delay=uint32 0
 allow-volume-above-100-percent=false
 
 [wm/keybindings]
+close=['<Super>q', '<Alt>F4']
+maximize=@as []
+minimize=['<Super>comma']
+move-to-monitor-down=@as []
+move-to-monitor-left=@as []
+move-to-monitor-right=@as []
+move-to-monitor-up=@as []
+move-to-workspace-down=@as []
+move-to-workspace-up=@as []
 show-desktop=['<Super>m']
+switch-to-workspace-down=['<Primary><Super>Down', '<Primary><Super>j']
+switch-to-workspace-left=@as []
+switch-to-workspace-right=@as []
+switch-to-workspace-up=['<Primary><Super>Up', '<Primary><Super>k']
+toggle-maximized=['<Super>m']
+unmaximize=@as []
 
 [wm/preferences]
 auto-raise=true

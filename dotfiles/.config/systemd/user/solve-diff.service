@@ -1,0 +1,11 @@
+[Unit]
+Description=Solve Diff Streamlit App
+After=network.target
+
+[Service]
+WorkingDirectory=/home/singhvi28/solve-diff
+ExecStart=/home/singhvi28/.local/bin/streamlit run app.py --server.port=8501 --server.headless=true
+Restart=always
+
+[Install]
+WantedBy=default.target

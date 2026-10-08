@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> [5/9] Setting up Development Runtimes (Node, UV/Python, Go, Neovim, IDE Extensions)"
+echo "==> [5/9] Setting up Development Runtimes (Node, UV/Python, Ollama, Go, Neovim, IDE Extensions)"
 
 mkdir -p "$HOME/.local/bin"
 
@@ -26,7 +26,13 @@ sudo apt install -y pipx || true
 pipx ensurepath || true
 pipx install yt-dlp || true
 
-# 4. Official Neovim Binary (/opt/nvim-linux-x86_64)
+# 4. Ollama (Local LLM Inference Engine)
+if ! command -v ollama &>/dev/null; then
+    echo "==> Installing Ollama for local LLM inference..."
+    curl -fsSL https://ollama.com/install.sh | sh || true
+fi
+
+# 5. Official Neovim Binary (/opt/nvim-linux-x86_64)
 if [ ! -d "/opt/nvim-linux-x86_64" ]; then
     echo "==> Installing Neovim latest release to /opt/nvim-linux-x86_64..."
     NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
@@ -36,7 +42,7 @@ if [ ! -d "/opt/nvim-linux-x86_64" ]; then
     rm -rf "$TEMP_DIR"
 fi
 
-# 5. Go Runtime
+# 6. Go Runtime
 if [ ! -d "$HOME/.local/go" ] && ! command -v go &>/dev/null; then
     echo "==> Installing Go 1.23.6 to ~/.local/go..."
     GO_VERSION="1.23.6"
@@ -49,7 +55,7 @@ if [ ! -d "$HOME/.local/go" ] && ! command -v go &>/dev/null; then
     mkdir -p "$HOME/go/bin" "$HOME/go/src" "$HOME/go/pkg"
 fi
 
-# 6. VS Code Extensions
+# 7. VS Code Extensions
 if command -v code &>/dev/null; then
     VSCODE_LIST="$(dirname "$0")/../packages/vscode-extensions.list"
     if [ -f "$VSCODE_LIST" ]; then
@@ -61,7 +67,7 @@ if command -v code &>/dev/null; then
     fi
 fi
 
-# 7. Cursor Extensions
+# 8. Cursor Extensions
 if command -v cursor &>/dev/null; then
     CURSOR_LIST="$(dirname "$0")/../packages/cursor-extensions.list"
     if [ -f "$CURSOR_LIST" ]; then

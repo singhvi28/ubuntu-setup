@@ -237,7 +237,22 @@ idle-delay=uint32 0
 allow-volume-above-100-percent=false
 
 [desktop/wm/keybindings]
+close=['<Super>q', '<Alt>F4']
+maximize=@as []
+minimize=['<Super>comma']
+move-to-monitor-down=@as []
+move-to-monitor-left=@as []
+move-to-monitor-right=@as []
+move-to-monitor-up=@as []
+move-to-workspace-down=@as []
+move-to-workspace-up=@as []
 show-desktop=['<Super>m']
+switch-to-workspace-down=['<Primary><Super>Down', '<Primary><Super>j']
+switch-to-workspace-left=@as []
+switch-to-workspace-right=@as []
+switch-to-workspace-up=['<Primary><Super>Up', '<Primary><Super>k']
+toggle-maximized=['<Super>m']
+unmaximize=@as []
 
 [desktop/wm/preferences]
 auto-raise=true
@@ -290,10 +305,14 @@ sort-order=0
 [mutter]
 edge-tiling=false
 experimental-features=['scale-monitor-framebuffer']
+workspaces-only-on-primary=false
 
 [mutter/keybindings]
 toggle-tiled-left=@as []
 toggle-tiled-right=@as []
+
+[mutter/wayland/keybindings]
+restore-shortcuts=@as []
 
 [nautilus/compression]
 default-compression-format='zip'
@@ -359,6 +378,12 @@ night-light-schedule-automatic=false
 
 [settings-daemon/plugins/media-keys]
 custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+email=['<Super>e']
+home=['<Super>f']
+rotate-video-lock-static=@as []
+screensaver=['<Super>Escape']
+terminal=['<Super>t']
+www=['<Super>b']
 
 [settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Shift><Super>h'
@@ -373,8 +398,9 @@ sleep-inactive-battery-timeout=900
 sleep-inactive-battery-type='nothing'
 
 [shell]
+disable-user-extensions=false
 disabled-extensions=['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']
-enabled-extensions=['ding@rastersoft.com', 'ubuntu-dock@ubuntu.com', 'tiling-assistant@ubuntu.com', 'clipboard-indicator@tudmotu.com', 'CoverflowAltTab@palatis.blogspot.com', 'Vitals@CoreCoding.com', 'just-another-search-bar@xelad0m', 'caffeine@patapon.info', 'display-brightness-ddcutil@themightydeity.github.com']
+enabled-extensions=['ding@rastersoft.com', 'ubuntu-dock@ubuntu.com', 'tiling-assistant@ubuntu.com', 'clipboard-indicator@tudmotu.com', 'CoverflowAltTab@palatis.blogspot.com', 'Vitals@CoreCoding.com', 'just-another-search-bar@xelad0m', 'caffeine@patapon.info', 'display-brightness-ddcutil@themightydeity.github.com', 'pop-shell@system76.com']
 favorite-apps=['google-chrome.desktop', 'brave-browser.desktop', 'org.gnome.Nautilus.desktop', 'brave-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop', 'code.desktop', 'antigravity-ide.desktop', 'cursor.desktop', 'brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop', 'org.gnome.Terminal.desktop']
 last-selected-power-profile='power-saver'
 welcome-dialog-last-shown-version='46.0'
@@ -490,8 +516,10 @@ overridden-settings={'org.gnome.mutter.edge-tiling': <@mb nothing>, 'org.gnome.m
 tiling-popup-all-workspace=false
 
 [shell/keybindings]
+open-application-menu=@as []
 show-screenshot-ui=['<Shift><Super>s']
-toggle-message-tray=@as []
+toggle-message-tray=['<Super>v']
+toggle-overview=@as []
 
 [shell/world-clocks]
 locations=@av []

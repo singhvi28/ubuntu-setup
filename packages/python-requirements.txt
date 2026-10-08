@@ -10,6 +10,7 @@ websockets>=13.0
 # AI, LLM & Machine Learning
 openai>=1.50.0
 litellm>=1.50.0
+langfuse>=2.50.0
 huggingface-hub>=0.28.0
 tiktoken>=0.8.0
 numpy>=2.0.0

@@ -1,6 +1,6 @@
 # 🐧 Ubuntu 24.04 LTS (Noble Numbat) Custom Setup & Dotfiles
 
-> Fully automated, modular, and reproducible setup suite for an Ubuntu 24.04 LTS workstation. Recreates packages, PPAs, kernel optimizations, GNOME customizations, dev runtimes, databases, background services, and dotfiles.
+> Fully automated, modular, and reproducible setup suite for an Ubuntu 24.04 LTS workstation. Recreates packages, PPAs, kernel optimizations, GNOME customizations, dev runtimes, local AI engines, databases, background services, and dotfiles.
 
 [![OS](https://img.shields.io/badge/OS-Ubuntu%2024.04%20LTS-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com/)
 [![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash/)
@@ -34,11 +34,12 @@ cd ~/ubuntu-setup
   - [2. Snap Removal & Flatpak Setup](#2-snap-removal--flatpak-setup)
   - [3. External Repositories & GPG Keys](#3-external-repositories--gpg-keys)
   - [4. Development Stacks & Toolchains](#4-development-stacks--toolchains)
-  - [5. Databases & Backend Services](#5-databases--backend-services)
-  - [6. GNOME Desktop & Shell Extensions](#6-gnome-desktop--shell-extensions)
-  - [7. Biometric Facial Authentication (Howdy)](#7-biometric-facial-authentication-howdy)
-  - [8. rTorrent Daemon & CLI (`rt`)](#8-rtorrent-daemon--cli-rt)
-  - [9. Custom Scripts & Binaries](#9-custom-scripts--binaries)
+  - [5. Local AI & LLM Inference (Ollama)](#5-local-ai--llm-inference-ollama)
+  - [6. Databases & Memory Footprint Optimization](#6-databases--memory-footprint-optimization)
+  - [7. GNOME Desktop, Pop Shell Tiling & Extensions](#7-gnome-desktop-pop-shell-tiling--extensions)
+  - [8. Biometric Facial Authentication (Howdy)](#8-biometric-facial-authentication-howdy)
+  - [9. Background Daemons & Services (`rtorrent`, `solve-diff`)](#9-background-daemons--services-rtorrent-solve-diff)
+  - [10. Custom Scripts & Binaries](#10-custom-scripts--binaries)
 - [Repository Structure](#-repository-structure)
 - [Step-by-Step Manual Guide](#-step-by-step-manual-guide)
 - [Post-Install Checklist](#-post-install-checklist)
@@ -66,6 +67,8 @@ cd ~/ubuntu-setup
   - `net.ipv4.ip_default_ttl = 65` and `net.ipv6.conf.all.hop_limit = 65` (optimizes packet forwarding and hotspot/tethering throughput).
 - **Wayland Fractional Scaling**:
   - `scale-monitor-framebuffer` enabled in Mutter for crisp HiDPI fractional display scaling.
+- **Power & Thermal Management**:
+  - `auto-cpufreq` installer integrated for optimizing CPU frequency and battery efficiency on AMD Ryzen laptops.
 
 ### 2. Snap Removal & Flatpak Setup
 Canonical's `snapd` is completely removed for reduced overhead, faster app launch times, and native deb/flatpak consistency:
@@ -90,11 +93,11 @@ The following official upstream repositories and PPAs are configured with modern
 - **Librewolf**: Managed cleanly via `extrepo`
 
 ### 4. Development Stacks & Toolchains
-- **C/C++**: `gcc`, `g++`, `gdb`, `clangd`, `cmake`, `ninja-build`
+- **C/C++**: `gcc`, `g++`, `gdb`, `clangd`, `cmake`, `ninja-build`, `make`
 - **Python**:
   - [Astral `uv`](https://github.com/astral-sh/uv) (ultra-fast pip/venv replacement in `~/.local/bin/uv`)
   - `pipx` for isolated CLI tools (`yt-dlp`)
-  - Full scientific/ML stack: NumPy, Pandas, Scikit-learn, Matplotlib, Seaborn, PyTorch, LiteLLM, OpenCV
+  - Full scientific/ML & Agentic stack: NumPy, Pandas, Scikit-learn, Matplotlib, Seaborn, PyTorch, LiteLLM, Langfuse, OpenCV
   - Web & API stack: FastAPI, Uvicorn, Streamlit, Playwright, Selenium, BeautifulSoup4
 - **Node.js & JavaScript**:
   - Node 20 LTS via NodeSource
@@ -108,49 +111,47 @@ The following official upstream repositories and PPAs are configured with modern
   - **VS Code & Cursor**: Configured with custom `settings.json`, `keybindings.json` (`Ctrl+F5` debug run), and full extension suite.
   - **Qoder** & **DBeaver CE** database management.
 
-### 5. Databases & Backend Services
-Native local services installed and ready:
-- **PostgreSQL 16** (`postgresql`, `postgresql-contrib`)
-- **MySQL Server** (`mysql-server`)
-- **Redis Server** (`redis-server`)
-- **RabbitMQ Message Broker** (`rabbitmq-server`)
-- **MongoDB 7.0** (`mongodb-org`)
-- **Docker Engine & Docker Compose** (User added to `docker` group)
+### 5. Local AI & LLM Inference (Ollama)
+- **Ollama Engine**: Local LLM runner installed as an active systemd service (`ollama.service`).
+- Enables CPU + Vulkan GPU acceleration for fast local code assistance and small parameter models (e.g. `qwen2.5-coder:7b`, `deepseek-r1:8b`).
 
-### 6. GNOME Desktop & Shell Extensions
+### 6. Databases & Memory Footprint Optimization
+Native local database engines are installed:
+- **PostgreSQL 16**, **MySQL Server**, **Redis Server**, **RabbitMQ**, **MongoDB 7.0**, **Docker Engine**.
+- **Memory Footprint Optimization**: Automatic boot startup for all database services is disabled (`systemctl disable`). Databases run **on-demand**, freeing up ~2GB of RAM on startup.
+
+### 7. GNOME Desktop, Pop Shell Tiling & Extensions
+- **Pop Shell Tiling Window Manager** (`pop-shell@system76.com`):
+  - i3/sway-style automatic tiling directly in Ubuntu GNOME for multi-window developer productivity.
 - **Keybindings**:
   - `Shift + Super + H`: Triggers system **Hibernate** (`sudo systemctl hibernate`).
   - `Super + M`: **Show Desktop**.
   - `Shift + Super + S`: **Interactive Screenshot UI**.
   - `Ctrl + F86MonBrightnessDown / Up`: External monitor DDC hardware brightness control.
 - **Dock Configuration**:
-  - Positioned at **Bottom**
-  - **Autohide enabled** (`dock-fixed=false`)
-  - Compact height (`extend-height=false`)
-  - Workspace isolation enabled
+  - Positioned at **Bottom**, **Autohide enabled** (`dock-fixed=false`), compact height, workspace isolation.
 - **Active Extensions**:
+  - `pop-shell@system76.com`: Auto-tiling window management
   - `blur-my-shell@aunetx`: Glassmorphism styling for shell and dock
-  - `caffeine@patapon.info`: Prevents system sleeping/locking during presentations or builds
+  - `caffeine@patapon.info`: Sleep prevention toggle
   - `clipboard-indicator@tudmotu.com`: Clipboard history with paste-on-select
   - `CoverflowAltTab@palatis.blogspot.com`: 3D coverflow task switcher
-  - `display-brightness-ddcutil@themightydeity.github.com`: Controls external monitor backlight via DDC/CI
+  - `display-brightness-ddcutil@themightydeity.github.com`: External monitor backlight DDC control
   - `just-another-search-bar@xelad0m`
-  - `just-perfection-desktop@just-perfection`: Fine-grained GNOME Shell customization
-  - `Vitals@CoreCoding.com`: Top bar hardware monitoring (CPU, RAM, GPU, temps, fan speed)
+  - `just-perfection-desktop@just-perfection`: GNOME Shell customization
+  - `Vitals@CoreCoding.com`: Top bar telemetry (CPU, RAM, GPU, temps, fan speed)
 
-### 7. Biometric Facial Authentication (Howdy)
+### 8. Biometric Facial Authentication (Howdy)
 - Infrared camera facial recognition matching Windows Hello functionality.
 - Configured with PAM module `/usr/lib/security/howdy/pam_howdy.so` for instant `sudo` and lockscreen authentication.
 - Emitter control tool `linux-enable-ir-emitter` enabled in `~/.local/bin`.
 
-### 8. rTorrent Daemon & CLI (`rt`)
-- Headless background service managed via systemd user unit (`rtorrent.service`).
-- SCGI Unix domain socket communication at `~/.rtorrent/session/rpc.sock`.
-- Custom CLI controller `rt` (`~/.local/bin/rt`):
-  - Checks/auto-starts background service
-  - Lists downloads, progress, peers, seeds, up/down speeds, and storage stats.
+### 9. Background Daemons & Services (`rtorrent`, `solve-diff`)
+- **Systemd User Lingering** enabled (`loginctl enable-linger`) so user services continue running without active graphical sessions.
+- **`rtorrent.service`**: Headless BitTorrent client in detached screen session with SCGI socket at `~/.rtorrent/session/rpc.sock`.
+- **`solve-diff.service`**: Background Streamlit service for Competitive Programming problem diff solver, accessible on `http://localhost:8501`.
 
-### 9. Custom Scripts & Binaries (`~/.local/bin/`)
+### 10. Custom Scripts & Binaries (`~/.local/bin/`)
 - `rt`: rTorrent client CLI with XML-RPC socket queries.
 - `playlist` & `playlist-length`: Universal Playlist Duration Calculator for local directories and YouTube playlists.
 - `motrix`: Flatpak runner wrapper.
@@ -167,13 +168,13 @@ ubuntu-setup/
 ├── LICENSE                            # MIT License
 ├── bootstrap.sh                       # Master interactive setup runner
 ├── scripts/
-│   ├── 01-system-prep.sh              # Sysctl tuning, snap removal, flatpak setup
+│   ├── 01-system-prep.sh              # Sysctl tuning, auto-cpufreq, snap removal, flatpak setup
 │   ├── 02-apt-repositories.sh         # All GPG keys and external APT sources
 │   ├── 03-install-apt-packages.sh     # Manually curated APT packages
 │   ├── 04-install-flatpaks.sh         # Flatpak applications
-│   ├── 05-dev-runtimes.sh             # Node 20, uv, Python, Go, Neovim, IDE extensions
-│   ├── 06-gnome-desktop.sh            # GNOME Dconf dump restore & extensions
-│   ├── 07-services-rtorrent.sh        # rTorrent systemd user service setup
+│   ├── 05-dev-runtimes.sh             # Node 20, uv, Ollama, Go, Neovim, IDE extensions
+│   ├── 06-gnome-desktop.sh            # Pop Shell tiling, GNOME Dconf dump restore & extensions
+│   ├── 07-services-rtorrent.sh        # Background services (rtorrent, solve-diff), lingering, DB tuning
 │   ├── 08-symlink-dotfiles.sh         # Dotfile deployment & bash configuration
 │   └── 09-face-unlock-howdy.sh        # Howdy IR facial recognition setup
 ├── packages/
@@ -182,7 +183,8 @@ ubuntu-setup/
 │   ├── npm-globals.list               # NPM global packages
 │   ├── vscode-extensions.list         # VS Code extensions list
 │   ├── cursor-extensions.list         # Cursor extensions list
-│   └── python-requirements.txt        # Key Python libraries
+│   ├── gnome-extensions-all.list      # All GNOME extensions
+│   └── python-requirements.txt        # Key Python libraries (ML, FastAPI, Streamlit, Langfuse)
 ├── dotfiles/
 │   ├── .bashrc_custom                 # Custom PATHs, exports, and aliases
 │   ├── .npmrc                         # User NPM prefix configuration
@@ -195,10 +197,10 @@ ubuntu-setup/
 │   │   ├── Code/User/                 # VS Code settings & keybindings
 │   │   ├── Cursor/User/               # Cursor settings
 │   │   ├── Qoder/User/                # Qoder settings
-│   │   └── systemd/user/              # User systemd service units
+│   │   └── systemd/user/              # User systemd service units (rtorrent, solve-diff)
 │   └── .local/bin/                    # Custom executables (rt, playlist, etc.)
 └── configs/
-    ├── dconf/                         # Dconf dumps for GNOME, mutter, shell
+    ├── dconf/                         # Dconf dumps for GNOME, mutter, shell, pop-shell
     ├── sysctl/                        # Kernel & network tuning .conf files
     └── pam/                           # PAM configuration examples
 ```
@@ -209,7 +211,7 @@ ubuntu-setup/
 
 If you prefer running individual components manually:
 
-### 1. Apply System Tuning
+### 1. Apply System Tuning & Power Optimization
 ```bash
 sudo cp configs/sysctl/99-swappiness.conf /etc/sysctl.d/
 sudo cp configs/sysctl/99-network-ttl.conf /etc/sysctl.d/
@@ -223,15 +225,20 @@ bash scripts/03-install-apt-packages.sh
 bash scripts/04-install-flatpaks.sh
 ```
 
-### 3. Deploy Dotfiles & Neovim
+### 3. Deploy Development Runtimes & Local AI
 ```bash
 bash scripts/05-dev-runtimes.sh
 bash scripts/08-symlink-dotfiles.sh
 ```
 
-### 4. Restore GNOME Desktop & Shortcuts
+### 4. Setup Pop Shell & GNOME Desktop
 ```bash
 bash scripts/06-gnome-desktop.sh
+```
+
+### 5. Setup Background Services & Lingering
+```bash
+bash scripts/07-services-rtorrent.sh
 ```
 
 ---
@@ -252,8 +259,10 @@ After the automated installer finishes, complete these remaining manual steps:
    sudo howdy add    # Enroll face model
    sudo howdy test   # Verify face detection
    ```
-3. **Hibernate Swapfile Setup** (if needed):
-   - Ensure `/data/swap.img` or root swap size >= RAM size (16GB).
+3. **Pull Ollama Local Models**:
+   ```bash
+   ollama pull qwen2.5-coder:7b
+   ```
 4. **Mount `/data` Partition**:
    - Add your data partition UUID to `/etc/fstab` if migrating to a new machine.
 

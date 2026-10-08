@@ -1,30 +1,38 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> [7/9] Setting up rTorrent Systemd Service and Daemon"
+echo "==> [7/9] Setting up Background Daemons, User Units & Service Optimizations"
 
-# 1. Ensure directories exist
+# 1. Enable User Lingering (keeps user systemd services running without active graphical login)
+echo "==> Enabling user lingering for $USER..."
+sudo loginctl enable-linger "$USER" || true
+
+# 2. Disable heavy database autostart on boot (saving ~2GB RAM, start on-demand)
+echo "==> Disabling automatic boot startup for database services (start on-demand)..."
+sudo systemctl disable postgresql mysql redis-server rabbitmq-server mongod 2>/dev/null || true
+
+# 3. Setup rTorrent Directories & Config
+echo "==> Configuring rTorrent directories and configuration..."
 mkdir -p "$HOME/.rtorrent/session"
 mkdir -p "$HOME/.rtorrent/watch"
 mkdir -p "$HOME/.config/systemd/user"
 
-# 2. Setup download directory
 if [ ! -d "/data" ]; then
     echo "Note: /data directory does not exist. Creating ~/data as fallback..."
     mkdir -p "$HOME/data"
 fi
 
-# 3. Copy configuration file
-echo "==> Copying .rtorrent.rc to ~/"
 cp "$(dirname "$0")/../dotfiles/.rtorrent.rc" "$HOME/.rtorrent.rc"
-
-# 4. Copy systemd user unit
-echo "==> Installing systemd user unit: rtorrent.service"
 cp "$(dirname "$0")/../dotfiles/.config/systemd/user/rtorrent.service" "$HOME/.config/systemd/user/rtorrent.service"
 
-# 5. Reload and enable systemd user service
-systemctl --user daemon-reload
-systemctl --user enable rtorrent.service
-systemctl --user restart rtorrent.service || true
+# 4. Setup Solve-Diff Streamlit Systemd Service
+echo "==> Installing solve-diff.service (Competitive Programming Streamlit UI)..."
+cp "$(dirname "$0")/../dotfiles/.config/systemd/user/solve-diff.service" "$HOME/.config/systemd/user/solve-diff.service"
 
-echo "==> rTorrent background service is configured and enabled!"
+# 5. Reload and Enable Systemd User Services
+echo "==> Enabling and starting systemd user units..."
+systemctl --user daemon-reload
+systemctl --user enable rtorrent.service solve-diff.service
+systemctl --user restart rtorrent.service solve-diff.service || true
+
+echo "==> Background services and daemons successfully configured!"

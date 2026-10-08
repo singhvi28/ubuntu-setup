@@ -1,6 +1,7 @@
 [/]
+disable-user-extensions=false
 disabled-extensions=['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']
-enabled-extensions=['ding@rastersoft.com', 'ubuntu-dock@ubuntu.com', 'tiling-assistant@ubuntu.com', 'clipboard-indicator@tudmotu.com', 'CoverflowAltTab@palatis.blogspot.com', 'Vitals@CoreCoding.com', 'just-another-search-bar@xelad0m', 'caffeine@patapon.info', 'display-brightness-ddcutil@themightydeity.github.com']
+enabled-extensions=['ding@rastersoft.com', 'ubuntu-dock@ubuntu.com', 'tiling-assistant@ubuntu.com', 'clipboard-indicator@tudmotu.com', 'CoverflowAltTab@palatis.blogspot.com', 'Vitals@CoreCoding.com', 'just-another-search-bar@xelad0m', 'caffeine@patapon.info', 'display-brightness-ddcutil@themightydeity.github.com', 'pop-shell@system76.com']
 favorite-apps=['google-chrome.desktop', 'brave-browser.desktop', 'org.gnome.Nautilus.desktop', 'brave-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop', 'code.desktop', 'antigravity-ide.desktop', 'cursor.desktop', 'brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop', 'org.gnome.Terminal.desktop']
 last-selected-power-profile='power-saver'
 welcome-dialog-last-shown-version='46.0'
@@ -116,8 +117,10 @@ overridden-settings={'org.gnome.mutter.edge-tiling': <@mb nothing>, 'org.gnome.m
 tiling-popup-all-workspace=false
 
 [keybindings]
+open-application-menu=@as []
 show-screenshot-ui=['<Shift><Super>s']
-toggle-message-tray=@as []
+toggle-message-tray=['<Super>v']
+toggle-overview=@as []
 
 [world-clocks]
 locations=@av []
