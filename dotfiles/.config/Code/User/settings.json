@@ -1,0 +1,15 @@
+{
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "liveServer.settings.donotVerifyTags": true,
+    "editor.fontSize": 16,
+    "files.autoSave": "afterDelay",
+    "python.defaultInterpreterPath": "/bin/python3",
+    "code-runner.executorMapByGlob": {
+
+        "pom.xml": "cd $dir && mvn clean package"
+    },
+    "cph.general.defaultLanguage": "python",
+    "cph.general.includeProblemIndex": true,
+    "cph.general.defaultLanguageTemplateFileLocation": "/home/singhvi28/Desktop/DSA/template/python-template/boilerplate.py"
+}

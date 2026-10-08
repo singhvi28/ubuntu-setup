@@ -1,0 +1,55 @@
+#############################################################################
+# rTorrent 0.9.8 Configuration File
+# Location: ~/.rtorrent.rc
+#############################################################################
+
+# Default directory to save downloaded torrents
+directory.default.set = /data
+
+# Session directory to save runtime state and resume information
+session.path.set = /home/singhvi28/.rtorrent/session
+
+# Watch directory: automatically load and start .torrent files added here
+schedule2 = watch_load, 5, 5, "load.start=/home/singhvi28/.rtorrent/watch/*.torrent"
+
+# Stop torrents when disk space drops below 500 MB
+schedule2 = low_diskspace, 5, 60, close_low_diskspace=500M
+
+# Listening port range
+network.port_range.set = 6881-6889
+network.port_random.set = no
+
+# Trackers and DHT
+trackers.use_udp.set = yes
+dht.mode.set = auto
+dht.port.set = 6881
+protocol.pex.set = yes
+
+# Encryption: prefer encrypted connections, but allow fallback
+protocol.encryption.set = allow_incoming,enable_retry,prefer_plaintext
+
+# Global peer limits
+throttle.min_peers.normal.set = 20
+throttle.max_peers.normal.set = 80
+throttle.min_peers.seed.set = 10
+throttle.max_peers.seed.set = 50
+throttle.max_uploads.set = 15
+
+# Transfer rates (KiB/s, 0 = unlimited)
+throttle.global_down.max_rate.set_kb = 0
+throttle.global_up.max_rate.set_kb = 0
+
+# Check hash for finished torrents
+pieces.hash.on_completion.set = yes
+
+# Maximum memory usage for caching piece data (1024 MB)
+pieces.memory.max.set = 1024M
+
+# Clean up stale SCGI socket if it exists and open Unix domain socket for XML-RPC
+execute.nothrow = rm, /home/singhvi28/.rtorrent/session/rpc.sock
+network.scgi.open_local = /home/singhvi28/.rtorrent/session/rpc.sock
+execute.nothrow = chmod, 770, /home/singhvi28/.rtorrent/session/rpc.sock
+network.xmlrpc.size_limit.set = 4194304
+
+# UTF-8 encoding
+encoding.add = UTF-8

@@ -1,0 +1,283 @@
+#!/usr/bin/env python3
+"""
+Universal Playlist Duration Calculator (Local Folders & YouTube Playlists)
+Calculates and displays the total length of videos in a local folder or YouTube playlist.
+"""
+
+import sys
+import os
+import re
+import argparse
+import subprocess
+from urllib.parse import urlparse, parse_qs
+from concurrent.futures import ThreadPoolExecutor
+
+VIDEO_EXTENSIONS = {
+    '.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', 
+    '.webm', '.m4v', '.ts', '.3gp', '.mpg', '.mpeg', '.m2ts', '.vob', '.ogv'
+}
+
+def natural_sort_key(s):
+    """Sort strings with embedded numbers naturally (e.g., '2.mp4' before '10.mp4')."""
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
+
+def extract_playlist_id(url_or_id):
+    """Extract playlist ID from YouTube URL or return ID directly."""
+    if not url_or_id:
+        return None
+    parsed = urlparse(url_or_id)
+    if parsed.netloc and ('youtube.com' in parsed.netloc or 'youtu.be' in parsed.netloc):
+        if 'list' in parse_qs(parsed.query):
+            return parse_qs(parsed.query)['list'][0]
+    # Check if input itself looks like a YouTube playlist ID (starts with PL, UU, FL, RD, etc.)
+    if re.match(r'^(PL|UU|FL|RD|OLAK5uy_)[a-zA-Z0-9_-]+$', url_or_id):
+        return url_or_id
+    return None
+
+def parse_ranges(range_str, max_len):
+    """
+    Parses a string like '1-12, 14, 15, 18-20' into a set of 0-based indices.
+    If range_str is empty, returns all indices up to max_len.
+    """
+    if not range_str or not range_str.strip():
+        return set(range(max_len))
+
+    indices = set()
+    parts = range_str.replace(" ", "").split(",")
+
+    for part in parts:
+        if "-" in part:
+            try:
+                start, end = map(int, part.split("-"))
+                indices.update(range(start - 1, end))
+            except ValueError:
+                continue
+        else:
+            try:
+                indices.add(int(part) - 1)
+            except ValueError:
+                continue
+
+    return {i for i in indices if 0 <= i < max_len}
+
+def format_time(seconds):
+    """Format seconds into hours, minutes, and seconds string."""
+    seconds = int(round(seconds))
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    s = seconds % 60
+    if h > 0:
+        return f"{h}h {m:02d}m {s:02d}s"
+    return f"{m}m {s:02d}s"
+
+# ----------------- LOCAL FOLDER HANDLING -----------------
+
+def get_video_files(folder_path, recursive=False):
+    """Collect and naturally sort all video files in the specified directory."""
+    video_files = []
+    if recursive:
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                ext = os.path.splitext(file)[1].lower()
+                if ext in VIDEO_EXTENSIONS:
+                    video_files.append(os.path.join(root, file))
+    else:
+        for entry in os.scandir(folder_path):
+            if entry.is_file():
+                ext = os.path.splitext(entry.name)[1].lower()
+                if ext in VIDEO_EXTENSIONS:
+                    video_files.append(entry.path)
+
+    video_files.sort(key=lambda p: natural_sort_key(os.path.basename(p)))
+    return video_files
+
+def get_file_duration(file_path):
+    """Get duration of a single video file in seconds using ffprobe."""
+    try:
+        cmd = [
+            'ffprobe',
+            '-v', 'error',
+            '-show_entries', 'format=duration',
+            '-of', 'default=noprint_wrappers=1:nokey=1',
+            file_path
+        ]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        return float(result.stdout.strip())
+    except Exception:
+        return 0.0
+
+def handle_local_folder(folder_path, recursive=False, range_input=None, verbose=False):
+    video_files = get_video_files(folder_path, recursive=recursive)
+    total_videos = len(video_files)
+
+    if total_videos == 0:
+        print(f"No video files found in: {folder_path}")
+        return
+
+    # If no range provided via flag and running interactively in terminal with many videos, prompt the user
+    if range_input is None and sys.stdin.isatty():
+        print(f"Found {total_videos} video{'s' if total_videos != 1 else ''} in: {folder_path}")
+        print("Enter video ranges (e.g., 1-12, 14, 18-20) or press ENTER for all:")
+        range_input = input("> ").strip()
+
+    target_indices = sorted(parse_ranges(range_input, total_videos))
+    selected_files = [video_files[i] for i in target_indices]
+
+    print(f"\nDirectory: {folder_path}")
+    print(f"Range selected: {range_input if range_input else 'All'}")
+    print(f"Found {total_videos} videos | Calculating {len(selected_files)} selected...")
+    print("-" * 65)
+
+    with ThreadPoolExecutor(max_workers=min(16, max(1, len(selected_files)))) as executor:
+        durations = list(executor.map(get_file_duration, selected_files))
+
+    total_seconds = 0.0
+    for orig_idx, file_path, dur in zip(target_indices, selected_files, durations):
+        total_seconds += dur
+        if verbose or len(selected_files) <= 30:
+            fname = os.path.relpath(file_path, folder_path)
+            if len(fname) > 48:
+                fname = fname[:45] + "..."
+            print(f"  [{orig_idx + 1:3d}] {fname:<50} {format_time(dur):>8}")
+
+    if len(selected_files) > 30 and not verbose:
+        print(f"  ... ({len(selected_files)} files processed. Use -v / --verbose to view all)")
+
+    selected_count = len(selected_files)
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+
+    print("-" * 65)
+    print(f"Videos calculated: {selected_count} (out of {total_videos})")
+    print(f"Total duration:    {int(hours)}h {int(minutes)}m {int(seconds)}s ({format_time(total_seconds)})")
+    print(f"Total in seconds:  {total_seconds:.2f}s")
+
+    if selected_count > 0:
+        avg = total_seconds / selected_count
+        print(f"Average duration:  {format_time(avg)}")
+
+# ----------------- YOUTUBE PLAYLIST HANDLING -----------------
+
+def handle_youtube_playlist(playlist_id, range_input=None):
+    try:
+        import yt_dlp
+    except ImportError:
+        print("Error: 'yt-dlp' is required for YouTube playlists. Install with: pip install yt-dlp", file=sys.stderr)
+        sys.exit(1)
+
+    ydl_opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'extract_flat': True,
+    }
+    playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+    
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        print(f"Extracting information for playlist: {playlist_id}...")
+        playlist_info = ydl.extract_info(playlist_url, download=False)
+        
+        if not playlist_info:
+            print("Error: Could not fetch playlist information.")
+            return
+        
+        entries = playlist_info.get('entries', [])
+        total_videos = len(entries)
+        
+        if total_videos == 0:
+            print("No videos found in this playlist.")
+            return
+
+        if range_input is None and sys.stdin.isatty():
+            print(f"Playlist: {playlist_info.get('title', 'Unknown')} ({total_videos} videos)")
+            print("Enter video ranges (e.g., 1-12, 14, 18-20) or press ENTER for all:")
+            range_input = input("> ").strip()
+
+        target_indices = sorted(parse_ranges(range_input, total_videos))
+        
+        total_seconds = 0
+        selected_count = 0
+        
+        print(f"\nPlaylist: {playlist_info.get('title', 'Unknown')}")
+        print(f"Uploader: {playlist_info.get('uploader', 'Unknown')}")
+        print(f"Range selected: {range_input if range_input else 'All'}")
+        print("-" * 65)
+        
+        for i in target_indices:
+            entry = entries[i]
+            if entry:
+                dur = entry.get('duration', 0) or 0
+                title = entry.get('title', f'Video {i+1}')
+                total_seconds += dur
+                selected_count += 1
+                if len(target_indices) <= 30:
+                    if len(title) > 48:
+                        title = title[:45] + "..."
+                    print(f"  [{i + 1:3d}] {title:<50} {format_time(dur):>8}")
+        
+        if len(target_indices) > 30:
+            print(f"  ... ({len(target_indices)} videos processed)")
+            
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
+        
+        print("-" * 65)
+        print(f"Videos calculated: {selected_count} (out of {total_videos})")
+        print(f"Total duration:    {int(hours)}h {int(minutes)}m {int(seconds)}s ({format_time(total_seconds)})")
+        print(f"Total in seconds:  {total_seconds}")
+        
+        if selected_count > 0:
+            avg_duration = total_seconds / selected_count
+            print(f"Average duration:  {format_time(avg_duration)}")
+
+# ----------------- MAIN ENTRYPOINT -----------------
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="playlist-length",
+        description="Calculate total duration of videos in a local folder or YouTube playlist.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Examples:\n"
+               "  playlist-length /path/to/folder\n"
+               "  playlist-length . --range '1-10, 15'\n"
+               "  playlist-length /path/to/folder -r\n"
+               "  playlist-length 'https://www.youtube.com/playlist?list=PLxxxx...'"
+    )
+    parser.add_argument(
+        "target",
+        nargs="?",
+        default=".",
+        help="Path to folder OR YouTube playlist URL / ID (default: current directory)"
+    )
+    parser.add_argument(
+        "-r", "--recursive",
+        action="store_true",
+        help="Scan subdirectories recursively (for folders)"
+    )
+    parser.add_argument(
+        "--range",
+        dest="range_input",
+        help="Optional video ranges (e.g. '1-10, 12, 15-20')"
+    )
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="List all video files and their durations"
+    )
+
+    args = parser.parse_args()
+    target = args.target
+
+    playlist_id = extract_playlist_id(target)
+    if playlist_id:
+        handle_youtube_playlist(playlist_id, range_input=args.range_input)
+    else:
+        folder_path = os.path.abspath(target)
+        if not os.path.isdir(folder_path):
+            print(f"Error: Target is neither a valid directory nor a YouTube playlist URL: {target}", file=sys.stderr)
+            sys.exit(1)
+        handle_local_folder(folder_path, recursive=args.recursive, range_input=args.range_input, verbose=args.verbose)
+
+if __name__ == "__main__":
+    main()

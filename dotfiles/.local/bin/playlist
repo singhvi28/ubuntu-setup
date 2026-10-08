@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [ "$1" = "length" ] || [ "$1" = "duration" ]; then
+    shift
+    exec playlist-length "$@"
+else
+    exec playlist-length "$@"
+fi

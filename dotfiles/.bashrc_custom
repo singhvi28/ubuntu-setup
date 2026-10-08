@@ -1,0 +1,13 @@
+# Custom PATH additions
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="/opt/nvim-linux-x86_64/bin:$PATH"
+export PATH="$HOME/.kimi-code/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+
+# Custom Aliases
+alias cf-check='cd /home/singhvi28/solve-diff && streamlit run app.py'
+alias solve-diff='cd /home/singhvi28/solve-diff && streamlit run app.py'
+alias cheese="GDK_BACKEND=x11 cheese"
+alias brave2='brave-browser --user-agent="Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"'
+alias updateall='sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean'

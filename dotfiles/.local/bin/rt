@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+import sys
+import os
+import socket
+import xmlrpc.client
+import subprocess
+import time
+
+SOCK_PATH = os.path.expanduser("~/.rtorrent/session/rpc.sock")
+
+def scgi_call(method, *args):
+    if not os.path.exists(SOCK_PATH):
+        raise FileNotFoundError(f"Socket not found at {SOCK_PATH}. Is rTorrent running?")
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(SOCK_PATH)
+    xml_body = xmlrpc.client.dumps(args, method)
+    headers = [
+        ('CONTENT_LENGTH', str(len(xml_body))),
+        ('SCGI', '1'),
+    ]
+    header_str = ''.join(f'{k}\x00{v}\x00' for k, v in headers)
+    netstring = f'{len(header_str)}:{header_str},'
+    s.sendall(netstring.encode('utf-8') + xml_body.encode('utf-8'))
+    response = b''
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        response += chunk
+    s.close()
+    _, _, body = response.partition(b'\r\n\r\n')
+    return xmlrpc.client.loads(body)[0][0]
+
+def human_size(n):
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        if n < 1024:
+            return f'{n:.1f} {unit}'
+        n /= 1024
+    return f'{n:.1f} PB'
+
+def ensure_running():
+    res = subprocess.run(["systemctl", "--user", "is-active", "--quiet", "rtorrent"])
+    if res.returncode != 0:
+        print("Starting rTorrent background service...")
+        subprocess.run(["systemctl", "--user", "start", "rtorrent"], check=True)
+        for _ in range(30):
+            if os.path.exists(SOCK_PATH):
+                break
+            time.sleep(0.1)
+
+def add_torrent(target):
+    ensure_running()
+    if os.path.isfile(target):
+        target = os.path.abspath(target)
+    print(f"Adding to rTorrent: {target}")
+    scgi_call("load.start", "", target)
+    print("Successfully queued in rTorrent!")
+
+def list_torrents():
+    if not os.path.exists(SOCK_PATH):
+        res = subprocess.run(["systemctl", "--user", "is-active", "--quiet", "rtorrent"])
+        if res.returncode != 0:
+            print("rTorrent is not currently running.")
+            return
+    try:
+        hashes = scgi_call("download_list")
+    except Exception as e:
+        print(f"Error querying rTorrent: {e}")
+        return
+    if not hashes:
+        print("No active torrents.")
+        return
+    print(f"{'STATUS':<10} {'PROGRESS':<22} {'DOWN/UP RATE':<20} {'NAME'}")
+    print("-" * 75)
+    for h in hashes:
+        try:
+            name = scgi_call("d.name", h) or "(fetching metadata...)"
+            size = scgi_call("d.size_bytes", h)
+            done = scgi_call("d.completed_bytes", h)
+            d_rate = scgi_call("d.down.rate", h)
+            u_rate = scgi_call("d.up.rate", h)
+            active = scgi_call("d.is_active", h)
+            pct = (done / size * 100) if size > 0 else 0
+            status = "Downloading" if active else "Paused"
+            if done >= size and size > 0:
+                status = "Seeding" if active else "Complete"
+            progress_str = f"{human_size(done)}/{human_size(size)} ({pct:.0f}%)"
+            rate_str = f"D:{human_size(d_rate)}/s U:{human_size(u_rate)}/s"
+            print(f"{status:<10} {progress_str:<22} {rate_str:<20} {name}")
+        except Exception:
+            continue
+
+def main():
+    args = sys.argv[1:]
+    if not args:
+        # Default: attach to screen
+        ensure_running()
+        os.execvp("screen", ["screen", "-r", "rtorrent"])
+
+    cmd = args[0]
+    if cmd.startswith("magnet:") or cmd.endswith(".torrent"):
+        add_torrent(cmd)
+    elif cmd == "add":
+        if len(args) < 2:
+            print("Usage: rt add <magnet-url-or-file.torrent>")
+            sys.exit(1)
+        add_torrent(args[1])
+    elif cmd == "list" or cmd == "ls":
+        list_torrents()
+    elif cmd == "start":
+        subprocess.run(["systemctl", "--user", "start", "rtorrent"], check=True)
+        print("rTorrent started.")
+    elif cmd == "stop":
+        subprocess.run(["systemctl", "--user", "stop", "rtorrent"], check=True)
+        print("rTorrent stopped.")
+    elif cmd == "restart":
+        subprocess.run(["systemctl", "--user", "restart", "rtorrent"], check=True)
+        print("rTorrent restarted.")
+    elif cmd == "status":
+        subprocess.run(["systemctl", "--user", "status", "rtorrent"])
+    elif cmd == "attach":
+        ensure_running()
+        os.execvp("screen", ["screen", "-r", "rtorrent"])
+    else:
+        print("Usage: rt [attach|start|stop|restart|status|list|add <magnet-or-torrent>]")
+        print("\nExamples:")
+        print("  rt                                  # Attach to interactive screen session")
+        print("  rt 'magnet:?xt=urn:btih:...'        # Quickly add a magnet link")
+        print("  rt add file.torrent                 # Add a local .torrent file")
+        print("  rt list                             # List active downloads and speeds")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

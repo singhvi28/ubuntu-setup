@@ -1,0 +1,2 @@
+# Add the following line to the top of /etc/pam.d/common-auth (or below pam_unix depending on preference)
+# auth    [success=3 default=ignore]    /usr/lib/security/howdy/pam_howdy.so

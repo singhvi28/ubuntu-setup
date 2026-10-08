@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Whisper Transcribe launcher
+VENV_PYTHON="/home/singhvi28/whisper-transcribe/.venv/bin/python"
+SCRIPT="/home/singhvi28/whisper-transcribe/transcribe.py"
+
+if [ ! -f "$VENV_PYTHON" ]; then
+    echo "Error: Virtual environment not found at /home/singhvi28/whisper-transcribe/.venv"
+    exit 1
+fi
+
+exec "$VENV_PYTHON" "$SCRIPT" "$@"

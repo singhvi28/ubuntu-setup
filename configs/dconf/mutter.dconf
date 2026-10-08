@@ -1,0 +1,7 @@
+[/]
+edge-tiling=false
+experimental-features=['scale-monitor-framebuffer']
+
+[keybindings]
+toggle-tiled-left=@as []
+toggle-tiled-right=@as []

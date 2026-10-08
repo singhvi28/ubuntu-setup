@@ -1,0 +1,13 @@
+[Unit]
+Description=rTorrent BitTorrent Client
+After=network.target
+
+[Service]
+Type=forking
+KillMode=none
+ExecStart=/usr/bin/screen -d -m -S rtorrent /usr/bin/rtorrent
+ExecStop=/usr/bin/screen -S rtorrent -X quit
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
