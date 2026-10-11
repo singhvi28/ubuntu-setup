@@ -1,0 +1,233 @@
+[
+  {
+    "id": "aapbdbdomjkkjkaonfhkkikfgjllcleb",
+    "name": "Google Translate",
+    "version": "2.0.17",
+    "description": "__MSG_5636646071825253269__",
+    "url": "https://chromewebstore.google.com/detail/aapbdbdomjkkjkaonfhkkikfgjllcleb"
+  },
+  {
+    "id": "aapgonaggmjjmdbckbnjcjnablnhgifb",
+    "name": "Udemy Price Tracker",
+    "version": "1.5",
+    "description": "Track Udemy course prices and get notified of discounts",
+    "url": "https://chromewebstore.google.com/detail/aapgonaggmjjmdbckbnjcjnablnhgifb"
+  },
+  {
+    "id": "agldajbhchobfgjcmmigehfdcjbmipne",
+    "name": "Blank Dark New Tab Page",
+    "version": "2.0",
+    "description": "Empty New Tab Page shows a blank dark page",
+    "url": "https://chromewebstore.google.com/detail/agldajbhchobfgjcmmigehfdcjbmipne"
+  },
+  {
+    "id": "apadogadaahdjhhmbdhkmdecbobijoed",
+    "name": "Wider Gemini",
+    "version": "2.8.0",
+    "description": "__MSG_appDesc__",
+    "url": "https://chromewebstore.google.com/detail/apadogadaahdjhhmbdhkmdecbobijoed"
+  },
+  {
+    "id": "chphlpgkkbolifaimnlloiipkdnihall",
+    "name": "OneTab",
+    "version": "2.21",
+    "description": "__MSG_manifestDescription__",
+    "url": "https://chromewebstore.google.com/detail/chphlpgkkbolifaimnlloiipkdnihall"
+  },
+  {
+    "id": "cjnmckjndlpiamhfimnnjmnckgghkjbl",
+    "name": "Competitive Companion",
+    "version": "2.65.0",
+    "description": "Parses competitive programming problems and sends them to various tools like CP Editor and CPH.",
+    "url": "https://chromewebstore.google.com/detail/cjnmckjndlpiamhfimnnjmnckgghkjbl"
+  },
+  {
+    "id": "cnahgdhboflcnojgmeehhhfeoojifonm",
+    "name": "Codeforces Practice Tracker",
+    "version": "2.0.1",
+    "description": "Track your Codeforces practice progress with phase-based statistics on your profile.",
+    "url": "https://chromewebstore.google.com/detail/cnahgdhboflcnojgmeehhhfeoojifonm"
+  },
+  {
+    "id": "cnghimckckgcmhbdokjielmhkmnagdcp",
+    "name": "Clip LeetCode",
+    "version": "2.0.6",
+    "description": "Copy the LeetCode problem to your clipboard.",
+    "url": "https://chromewebstore.google.com/detail/cnghimckckgcmhbdokjielmhkmnagdcp"
+  },
+  {
+    "id": "debbebdlpbnpnnicofdpociejpmokdnm",
+    "name": "BetterLC",
+    "version": "1.3",
+    "description": "Chrome extension to unlock leetcode company tags.",
+    "url": "https://chromewebstore.google.com/detail/debbebdlpbnpnnicofdpociejpmokdnm"
+  },
+  {
+    "id": "dhdgffkkebhmkfjojejmpbldmpobfkfo",
+    "name": "Tampermonkey",
+    "version": "5.5.1",
+    "description": "__MSG_extDescription__",
+    "url": "https://chromewebstore.google.com/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"
+  },
+  {
+    "id": "dhhhonpdnpmedblhfhppmmpmmadmkkpi",
+    "name": "Leetcode Analyzer",
+    "version": "0.0.6",
+    "description": "Add a graph for visualization of number of question per tag and also add a contest history table",
+    "url": "https://chromewebstore.google.com/detail/dhhhonpdnpmedblhfhppmmpmmadmkkpi"
+  },
+  {
+    "id": "ehbcfilpfnlahficlpimomapmbccieoi",
+    "name": "Codeforces++",
+    "version": "2.4.0",
+    "description": "Codeforces extension pack",
+    "url": "https://chromewebstore.google.com/detail/ehbcfilpfnlahficlpimomapmbccieoi"
+  },
+  {
+    "id": "eimadpbcbfnmbkopoojfekhnkhdbieeh",
+    "name": "Dark Reader",
+    "version": "4.9.133",
+    "description": "__MSG_extension_description__",
+    "url": "https://chromewebstore.google.com/detail/eimadpbcbfnmbkopoojfekhnkhdbieeh"
+  },
+  {
+    "id": "ejkiikneibegknkgimmihdpcbcedgmpo",
+    "name": "Volume Booster",
+    "version": "1.0.7",
+    "description": "Chrome Extension for Boosting Volume Past Max Settings",
+    "url": "https://chromewebstore.google.com/detail/ejkiikneibegknkgimmihdpcbcedgmpo"
+  },
+  {
+    "id": "ekplnobooikgpdbobcciehbhcmlklgnc",
+    "name": "CPH Submit",
+    "version": "1.9.0",
+    "description": "Codeforces Submit add-on for Competitive Programming Helper.",
+    "url": "https://chromewebstore.google.com/detail/ekplnobooikgpdbobcciehbhcmlklgnc"
+  },
+  {
+    "id": "fklpgenihifpccgiifchnihilipmbffg",
+    "name": "Caret Browsing",
+    "version": "1.1.0",
+    "description": "__MSG_CARET_BROWSING_APPDESC__",
+    "url": "https://chromewebstore.google.com/detail/fklpgenihifpccgiifchnihilipmbffg"
+  },
+  {
+    "id": "fmkadmapgofadopljbjfkapdkoienihi",
+    "name": "React Developer Tools",
+    "version": "8.0.0",
+    "description": "Adds React debugging tools to the Chrome Developer Tools.\n\nCreated from revision 1d34f91dfd.",
+    "url": "https://chromewebstore.google.com/detail/fmkadmapgofadopljbjfkapdkoienihi"
+  },
+  {
+    "id": "gakohpplicjdhhfllilcjpfildodfnnn",
+    "name": "Carrot",
+    "version": "0.6.8",
+    "description": "Rating predictor for Codeforces",
+    "url": "https://chromewebstore.google.com/detail/gakohpplicjdhhfllilcjpfildodfnnn"
+  },
+  {
+    "id": "ghbmnnjooekpmoecnnnilnnbdlolhkhi",
+    "name": "__MSG_extName__",
+    "version": "1.110.1",
+    "description": "__MSG_extDesc__",
+    "url": "https://chromewebstore.google.com/detail/ghbmnnjooekpmoecnnnilnnbdlolhkhi"
+  },
+  {
+    "id": "ghmbeldphafepmbegfdlkpapadhbakde",
+    "name": "Proton Pass: Free Password Manager",
+    "version": "1.41.1",
+    "description": "Free and fully encrypted password manager to keep your logins and passwords safe.",
+    "url": "https://chromewebstore.google.com/detail/ghmbeldphafepmbegfdlkpapadhbakde"
+  },
+  {
+    "id": "hedijgjklbddpidomdhhngflipnibhca",
+    "name": "Leetcode Difficulty Rating",
+    "version": "2.0.2",
+    "description": "Replace Leetcode problem's difficulty with a more precise contest rating.",
+    "url": "https://chromewebstore.google.com/detail/hedijgjklbddpidomdhhngflipnibhca"
+  },
+  {
+    "id": "hhljbjodjdbjbggddjaidojnlmaobcpo",
+    "name": "CF Analytics",
+    "version": "3.0.0",
+    "description": "Analyse Codeforces profiles",
+    "url": "https://chromewebstore.google.com/detail/hhljbjodjdbjbggddjaidojnlmaobcpo"
+  },
+  {
+    "id": "hlnclfeomhfnihcloaaakodcbbkgkkoc",
+    "name": "HirePro Assessment",
+    "version": "1.4",
+    "description": "Disables distracting extensions on hirepro assessments for fair testing",
+    "url": "https://chromewebstore.google.com/detail/hlnclfeomhfnihcloaaakodcbbkgkkoc"
+  },
+  {
+    "id": "hpiijpnofpcbmenknoceidnbhkongdeb",
+    "name": "LinkedIn Feed Cleaner",
+    "version": "1.1",
+    "description": "Hide noise from LinkedIn feed",
+    "url": "https://chromewebstore.google.com/detail/hpiijpnofpcbmenknoceidnbhkongdeb"
+  },
+  {
+    "id": "jaioibhbkffompljnnipmpkeafhpicpd",
+    "name": "Tab Auto Refresh",
+    "version": "0.2.3",
+    "description": "Automatically refresh tabs based on custom time intervals",
+    "url": "https://chromewebstore.google.com/detail/jaioibhbkffompljnnipmpkeafhpicpd"
+  },
+  {
+    "id": "jcokkipkhhgiakinbnnplhkdbjbgcgpe",
+    "name": "uBlock Origin",
+    "version": "1.75.0",
+    "description": "__MSG_extShortDesc__",
+    "url": "https://chromewebstore.google.com/detail/jcokkipkhhgiakinbnnplhkdbjbgcgpe"
+  },
+  {
+    "id": "jplgfhpmjnbigmhklmmbgecoobifkmpa",
+    "name": "Proton VPN: Fast & Secure",
+    "version": "1.3.6",
+    "description": "Secure your internet and protect your online privacy in one click.",
+    "url": "https://chromewebstore.google.com/detail/jplgfhpmjnbigmhklmmbgecoobifkmpa"
+  },
+  {
+    "id": "kagjkiiecagemklhmhkabbalfpbianbe",
+    "name": "AI Exporter - Save ChatGPT, Claude and Gemini chats to PDF, MD and more",
+    "version": "4.5.1",
+    "description": "__MSG_extensionDescription__",
+    "url": "https://chromewebstore.google.com/detail/kagjkiiecagemklhmhkabbalfpbianbe"
+  },
+  {
+    "id": "kjkiajelmfimihhmiggjjcaibjmlbcpf",
+    "name": "Really Hide YouTube Shorts",
+    "version": "1.0.6",
+    "description": "A very simple plugin to hide all YouTube Shorts. Created by Zero.",
+    "url": "https://chromewebstore.google.com/detail/kjkiajelmfimihhmiggjjcaibjmlbcpf"
+  },
+  {
+    "id": "kppndhfiaenbiioipolacicknfmdcdep",
+    "name": "Rename Tab Title",
+    "version": "1.3",
+    "description": "Renames the Tab Title",
+    "url": "https://chromewebstore.google.com/detail/kppndhfiaenbiioipolacicknfmdcdep"
+  },
+  {
+    "id": "lmoaammondkfnilhefjpapcppoefeagl",
+    "name": "Video filters for YouTube [QVI]",
+    "version": "0.0.6",
+    "description": "__MSG_description__",
+    "url": "https://chromewebstore.google.com/detail/lmoaammondkfnilhefjpapcppoefeagl"
+  },
+  {
+    "id": "lnfgjljnmoickkgbjedecbkcmhhdncpk",
+    "name": "xodeforces",
+    "version": "1.0.3",
+    "description": "Web based Code-editor for Codeforces",
+    "url": "https://chromewebstore.google.com/detail/lnfgjljnmoickkgbjedecbkcmhhdncpk"
+  },
+  {
+    "id": "ponfpcnoihfmfllpaingbgckeeldkhle",
+    "name": "Enhancer for YouTube\u2122",
+    "version": "3.0.19",
+    "description": "__MSG_description__",
+    "url": "https://chromewebstore.google.com/detail/ponfpcnoihfmfllpaingbgckeeldkhle"
+  }
+]

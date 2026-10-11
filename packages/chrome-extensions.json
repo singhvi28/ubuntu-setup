@@ -1,0 +1,58 @@
+[
+  {
+    "id": "bflnfmllkbhilogfbdilcckpkfganelc",
+    "name": "GRAYtist",
+    "version": "1.1.0",
+    "description": "Filter Codeforces Recent Actions, comments, and standings by rating tier and keywords.",
+    "url": "https://chromewebstore.google.com/detail/bflnfmllkbhilogfbdilcckpkfganelc"
+  },
+  {
+    "id": "cjnmckjndlpiamhfimnnjmnckgghkjbl",
+    "name": "Competitive Companion",
+    "version": "2.65.0",
+    "description": "Parses competitive programming problems and sends them to various tools like CP Editor and CPH.",
+    "url": "https://chromewebstore.google.com/detail/cjnmckjndlpiamhfimnnjmnckgghkjbl"
+  },
+  {
+    "id": "eimadpbcbfnmbkopoojfekhnkhdbieeh",
+    "name": "Dark Reader",
+    "version": "4.9.133",
+    "description": "__MSG_extension_description__",
+    "url": "https://chromewebstore.google.com/detail/eimadpbcbfnmbkopoojfekhnkhdbieeh"
+  },
+  {
+    "id": "gakohpplicjdhhfllilcjpfildodfnnn",
+    "name": "Carrot",
+    "version": "0.6.8",
+    "description": "Rating predictor for Codeforces",
+    "url": "https://chromewebstore.google.com/detail/gakohpplicjdhhfllilcjpfildodfnnn"
+  },
+  {
+    "id": "ghbmnnjooekpmoecnnnilnnbdlolhkhi",
+    "name": "__MSG_extName__",
+    "version": "1.110.1",
+    "description": "__MSG_extDesc__",
+    "url": "https://chromewebstore.google.com/detail/ghbmnnjooekpmoecnnnilnnbdlolhkhi"
+  },
+  {
+    "id": "hhljbjodjdbjbggddjaidojnlmaobcpo",
+    "name": "CF Analytics",
+    "version": "3.0.0",
+    "description": "Analyse Codeforces profiles",
+    "url": "https://chromewebstore.google.com/detail/hhljbjodjdbjbggddjaidojnlmaobcpo"
+  },
+  {
+    "id": "hlnclfeomhfnihcloaaakodcbbkgkkoc",
+    "name": "HirePro Assessment",
+    "version": "1.4",
+    "description": "Disables distracting extensions on hirepro assessments for fair testing",
+    "url": "https://chromewebstore.google.com/detail/hlnclfeomhfnihcloaaakodcbbkgkkoc"
+  },
+  {
+    "id": "nmmhkkegccagdldgiimedpiccmgmieda",
+    "name": "__MSG_APP_NAME__",
+    "version": "1.0.0.6",
+    "description": "__MSG_APP_DESCRIPTION__",
+    "url": "https://chromewebstore.google.com/detail/nmmhkkegccagdldgiimedpiccmgmieda"
+  }
+]

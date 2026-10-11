@@ -49,6 +49,7 @@ run_all() {
     run_step "07-services-rtorrent.sh" "rTorrent systemd daemon & directory structure"
     run_step "08-symlink-dotfiles.sh" "Dotfiles, Neovim config & CLI scripts"
     run_step "09-face-unlock-howdy.sh" "Howdy face unlock setup guide"
+    run_step "11-browser-extensions.sh" "Browser Extensions Provisioning (Brave & Chrome)"
     
     read -p "Do you want to configure NSFW website restrictions & SafeSearch? [y/N]: " -r APPLY_NSFW
     if [[ "$APPLY_NSFW" =~ ^[Yy]$ ]]; then
@@ -75,6 +76,7 @@ print_menu() {
     echo "  [8] Dotfiles & CLI Scripts (~/.local/bin, Neovim, MangoHud)"
     echo "  [9] Facial Recognition / Howdy Guide"
     echo "  [10] NSFW Website Restrictions & Anti-Bypass Defenses"
+    echo "  [11] Browser Extensions Provisioning (Brave & Chrome)"
     echo "  [q] Quit"
     echo ""
 }
@@ -98,7 +100,7 @@ fi
 
 while true; do
     print_menu
-    read -p "Select option [0-10, q]: " choice
+    read -p "Select option [0-11, q]: " choice
     case "$choice" in
         0) run_all; break ;;
         1) run_step "01-system-prep.sh" "System prep & sysctl";;
@@ -111,6 +113,7 @@ while true; do
         8) run_step "08-symlink-dotfiles.sh" "Dotfiles & Scripts";;
         9) run_step "09-face-unlock-howdy.sh" "Howdy Facial Recognition";;
         10) run_step "10-nsfw-restrictions.sh" "NSFW Website Restrictions";;
+        11) run_step "11-browser-extensions.sh" "Browser Extensions Provisioning";;
         q|Q) echo "Exiting..."; exit 0;;
         *) echo -e "${RED}Invalid choice!${NC}\n";;
     esac

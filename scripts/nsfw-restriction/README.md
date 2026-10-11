@@ -39,8 +39,3 @@ sudo ./apply.sh
 ```bash
 ./verify.sh
 ```
-
-### Remove / Restore Defaults
-```bash
-sudo ./remove.sh
-```

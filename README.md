@@ -41,6 +41,7 @@ cd ~/ubuntu-setup
   - [9. Background Daemons & Services (`rtorrent`, `solve-diff`)](#9-background-daemons--services-rtorrent-solve-diff)
   - [10. Custom Scripts & Binaries](#10-custom-scripts--binaries)
   - [11. NSFW Website Restrictions & Anti-Bypass Defenses](#11-nsfw-website-restrictions--anti-bypass-defenses)
+  - [12. Browser Extensions & Custom Settings](#12-browser-extensions--custom-settings)
 - [Repository Structure](#-repository-structure)
 - [Step-by-Step Manual Guide](#-step-by-step-manual-guide)
 - [Post-Install Checklist](#-post-install-checklist)
@@ -168,7 +169,23 @@ Multi-layered, tamper-resistant restriction suite ensuring adult content is bloc
 - **Usage**:
   - Apply: `sudo ./scripts/nsfw-restriction/apply.sh` (or `./scripts/10-nsfw-restrictions.sh --apply`)
   - Verify: `./scripts/nsfw-restriction/verify.sh` (or `./scripts/10-nsfw-restrictions.sh --verify`)
-  - Remove: `sudo ./scripts/nsfw-restriction/remove.sh` (or `./scripts/10-nsfw-restrictions.sh --remove`)
+
+### 12. Browser Extensions & Custom Settings
+Comprehensive extension catalog documented in [`packages/browser-extensions.md`](packages/browser-extensions.md):
+- **Brave Browser (33 Extensions)**:
+  - *Competitive Programming / LeetCode*: Competitive Companion, CPH Submit, Codeforces Practice Tracker, Codeforces++, Carrot, CF Analytics, xodeforces, BetterLC, Clip LeetCode, Leetcode Analyzer, Leetcode Difficulty Rating.
+  - *Privacy & Security*: uBlock Origin, Proton Pass, Proton VPN.
+  - *AI & Development*: React Developer Tools, AI Exporter (ChatGPT/Claude/Gemini chats), Wider Gemini, Tampermonkey.
+  - *Media & Productivity*: Dark Reader, Enhancer for YouTube, Really Hide YouTube Shorts, OneTab, Tab Auto Refresh, Blank Dark New Tab, Volume Booster.
+- **Google Chrome (8 Extensions)**:
+  - GRAYtist, Competitive Companion, Dark Reader, Carrot, CF Analytics, HirePro Assessment.
+- **Automated Provisioning (`scripts/11-browser-extensions.sh`)**:
+  - Automatically generates Chromium `External Extensions` JSON descriptors for all 33 Brave and Chrome extensions.
+  - When the browser is launched on a fresh PC, it immediately downloads and prompts to activate all extensions.
+- **Settings & Profile Synchronization**:
+  - **Brave**: Use **Brave Sync** (24-word sync chain phrase) to safely restore bookmarks, history, and passwords without exposing credentials to Git.
+  - **Chrome**: Use Google Account Sync.
+  - **Mobile Emulation**: Custom alias `brave2` in `.bashrc_custom` provides instant Android Pixel User-Agent emulation.
 
 ---
 
@@ -190,14 +207,17 @@ ubuntu-setup/
 │   ├── 08-symlink-dotfiles.sh         # Dotfile deployment & bash configuration
 │   ├── 09-face-unlock-howdy.sh        # Howdy IR facial recognition setup
 │   ├── 10-nsfw-restrictions.sh        # Interactive NSFW restriction manager
+│   ├── 11-browser-extensions.sh       # Automated Brave & Chrome extension provisioning
 │   └── nsfw-restriction/              # Modular restriction scripts
 │       ├── apply.sh                   # Hardened installer (DNS, hosts, policies, firewall)
 │       ├── verify.sh                  # Non-root verification probe
-│       ├── remove.sh                  # Clean uninstaller/rollback
 │       └── README.md                  # Component documentation
 ├── packages/
 │   ├── apt-packages.list              # Raw list of manually installed packages
 │   ├── flatpak-packages.list          # Flatpak applications list
+│   ├── brave-extensions.json          # Machine-readable Brave extension descriptors (33 extensions)
+│   ├── chrome-extensions.json         # Machine-readable Chrome extension descriptors (8 extensions)
+│   ├── browser-extensions.md          # Comprehensive catalog with Chrome Web Store links
 │   ├── npm-globals.list               # NPM global packages
 │   ├── vscode-extensions.list         # VS Code extensions list
 │   ├── cursor-extensions.list         # Cursor extensions list

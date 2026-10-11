@@ -33,15 +33,6 @@ run_verify() {
     bash "$NSFW_DIR/verify.sh"
 }
 
-run_remove() {
-    echo -e "\n${YELLOW}==> Removing NSFW content restrictions...${NC}"
-    if [ "$EUID" -ne 0 ]; then
-        sudo bash "$NSFW_DIR/remove.sh"
-    else
-        bash "$NSFW_DIR/remove.sh"
-    fi
-}
-
 # Handle command-line arguments if provided
 if [ "$#" -gt 0 ]; then
     case "$1" in
@@ -53,12 +44,8 @@ if [ "$#" -gt 0 ]; then
             run_verify
             exit 0
             ;;
-        --remove|-r)
-            run_remove
-            exit 0
-            ;;
         --help|-h)
-            echo "Usage: ./10-nsfw-restrictions.sh [--apply | --verify | --remove]"
+            echo "Usage: ./10-nsfw-restrictions.sh [--apply | --verify]"
             exit 0
             ;;
         *)
@@ -74,15 +61,13 @@ echo " Manage NSFW Filtering, SafeSearch & Firewall Anti-Bypass"
 echo -e "-------------------------------------------------------------${NC}"
 echo "  [1] Apply / Update Restrictions (DNS, 140k+ Hosts, Browser Policies, Firewall)"
 echo "  [2] Verify Current Restriction Status & Run Probes"
-echo "  [3] Remove Restrictions & Restore Defaults"
 echo "  [q] Return / Exit"
 echo ""
 
-read -p "Select option [1-3, q]: " -r choice
+read -p "Select option [1-2, q]: " -r choice
 case "$choice" in
     1) run_apply ;;
     2) run_verify ;;
-    3) run_remove ;;
     q|Q) echo "Skipping...";;
     *) echo -e "${RED}Invalid choice!${NC}" ;;
 esac
