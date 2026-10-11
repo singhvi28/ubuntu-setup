@@ -1,0 +1,12 @@
+{
+  "policies": {
+    "DNSOverHTTPS": {
+      "Enabled": false,
+      "Locked": true
+    },
+    "SafeBrowsing": {
+      "Enabled": true,
+      "Locked": true
+    }
+  }
+}

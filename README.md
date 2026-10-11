@@ -40,6 +40,7 @@ cd ~/ubuntu-setup
   - [8. Biometric Facial Authentication (Howdy)](#8-biometric-facial-authentication-howdy)
   - [9. Background Daemons & Services (`rtorrent`, `solve-diff`)](#9-background-daemons--services-rtorrent-solve-diff)
   - [10. Custom Scripts & Binaries](#10-custom-scripts--binaries)
+  - [11. NSFW Website Restrictions & Anti-Bypass Defenses](#11-nsfw-website-restrictions--anti-bypass-defenses)
 - [Repository Structure](#-repository-structure)
 - [Step-by-Step Manual Guide](#-step-by-step-manual-guide)
 - [Post-Install Checklist](#-post-install-checklist)
@@ -158,6 +159,17 @@ Native local database engines are installed:
 - `whisper-transcribe`: Launcher for local Whisper AI transcription virtual environment.
 - `mangohud` & `mangoplot`: Gaming / GPU performance overlay and benchmark plotter.
 
+### 11. NSFW Website Restrictions & Anti-Bypass Defenses
+Multi-layered, tamper-resistant restriction suite ensuring adult content is blocked and SafeSearch is enforced across all browsers and connections:
+- **System-Wide Family DNS (`systemd-resolved`)**: Unconditionally routes all queries through CleanBrowsing Family (`185.228.168.168`) and Cloudflare Family (`1.1.1.3`), locking SafeSearch on Google, Bing, DuckDuckGo, and YouTube at the resolver level.
+- **Enterprise Browser Policies**: Pre-staged for all Chromium (Chrome, Chromium, Brave, Edge, Vivaldi, Opera) and Firefox (Firefox, LibreWolf, Waterfox) families, locking DNS-over-HTTPS (DoH) OFF and locking Google SafeSearch ON.
+- **Offline Blocklist (`/etc/hosts`)**: Integrates StevenBlack's curated repository with 140,000+ adult domains mapped locally to `0.0.0.0`.
+- **Kernel Firewall Anti-Bypass (`iptables`)**: Prevents DNS leakage on port 53 and blocks unmanaged DoH endpoints (`1.1.1.1`, `8.8.8.8`, `9.9.9.9`), forcing newly downloaded or portable browsers (AppImages) to fail over to the filtered system resolver.
+- **Usage**:
+  - Apply: `sudo ./scripts/nsfw-restriction/apply.sh` (or `./scripts/10-nsfw-restrictions.sh --apply`)
+  - Verify: `./scripts/nsfw-restriction/verify.sh` (or `./scripts/10-nsfw-restrictions.sh --verify`)
+  - Remove: `sudo ./scripts/nsfw-restriction/remove.sh` (or `./scripts/10-nsfw-restrictions.sh --remove`)
+
 ---
 
 ## 📂 Repository Structure
@@ -176,7 +188,13 @@ ubuntu-setup/
 │   ├── 06-gnome-desktop.sh            # Pop Shell tiling, GNOME Dconf dump restore & extensions
 │   ├── 07-services-rtorrent.sh        # Background services (rtorrent, solve-diff), lingering, DB tuning
 │   ├── 08-symlink-dotfiles.sh         # Dotfile deployment & bash configuration
-│   └── 09-face-unlock-howdy.sh        # Howdy IR facial recognition setup
+│   ├── 09-face-unlock-howdy.sh        # Howdy IR facial recognition setup
+│   ├── 10-nsfw-restrictions.sh        # Interactive NSFW restriction manager
+│   └── nsfw-restriction/              # Modular restriction scripts
+│       ├── apply.sh                   # Hardened installer (DNS, hosts, policies, firewall)
+│       ├── verify.sh                  # Non-root verification probe
+│       ├── remove.sh                  # Clean uninstaller/rollback
+│       └── README.md                  # Component documentation
 ├── packages/
 │   ├── apt-packages.list              # Raw list of manually installed packages
 │   ├── flatpak-packages.list          # Flatpak applications list
@@ -202,7 +220,8 @@ ubuntu-setup/
 └── configs/
     ├── dconf/                         # Dconf dumps for GNOME, mutter, shell, pop-shell
     ├── sysctl/                        # Kernel & network tuning .conf files
-    └── pam/                           # PAM configuration examples
+    ├── pam/                           # PAM configuration examples
+    └── nsfw-restriction/              # DNS drop-in and browser policy JSON templates
 ```
 
 ---
