@@ -15,10 +15,11 @@ echo "==> Installing MangoHud configuration..."
 mkdir -p "$HOME/.config/MangoHud"
 cp -r "$DOTFILES_DIR/.config/MangoHud/"* "$HOME/.config/MangoHud/"
 
-# 3. VS Code / Cursor / Qoder settings
+# 3. VS Code / Code Insiders / Cursor / Qoder settings
 echo "==> Deploying IDE settings..."
-mkdir -p "$HOME/.config/Code/User" "$HOME/.config/Cursor/User" "$HOME/.config/Qoder/User"
+mkdir -p "$HOME/.config/Code/User" "$HOME/.config/Code - Insiders/User" "$HOME/.config/Cursor/User" "$HOME/.config/Qoder/User"
 cp "$DOTFILES_DIR/.config/Code/User/"* "$HOME/.config/Code/User/" 2>/dev/null || true
+cp "$DOTFILES_DIR/.config/Code - Insiders/User/"* "$HOME/.config/Code - Insiders/User/" 2>/dev/null || true
 cp "$DOTFILES_DIR/.config/Cursor/User/"* "$HOME/.config/Cursor/User/" 2>/dev/null || true
 cp "$DOTFILES_DIR/.config/Qoder/User/"* "$HOME/.config/Qoder/User/" 2>/dev/null || true
 
@@ -49,6 +50,9 @@ alias solve-diff='cd /home/singhvi28/solve-diff && streamlit run app.py'
 alias cheese="GDK_BACKEND=x11 cheese"
 alias brave2='brave-browser --user-agent="Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"'
 alias updateall='sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
+
+# Memory-CPU Tradeoff: Limit Node heap size to trigger earlier GC & memory compaction
+export NODE_OPTIONS="--max-old-space-size=2048"
 # ============================================
 BASH_EOF
 fi

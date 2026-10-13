@@ -85,3 +85,10 @@ The recommended, secure architecture is:
      ```bash
      alias brave2='brave-browser --user-agent="Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"'
      ```
+
+### 4. Memory Saver & CPU Optimization (Trading CPU for RAM)
+To keep memory usage minimal on 16GB systems with multi-core CPUs:
+* **Brave Memory Saver**: Enable in `brave://settings/system` (or `chrome://settings/performance`) and set to **Aggressive / Maximum**. Discards background tabs from RAM and relies on the fast multi-threaded CPU to re-render them instantaneously when clicked.
+* **Auto Tab Discard Extension**: Automatically suspends idle background tabs after 5–10 minutes.
+* **Hardware Acceleration**: Keep enabled (`brave://flags/#enable-gpu-rasterization`) to offload 2D/3D compositing and raster buffers from RAM to hardware graphics pipelines.
+

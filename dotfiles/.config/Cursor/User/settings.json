@@ -1,5 +1,19 @@
 {
     "window.commandCenter": true,
     "window.autoDetectColorScheme": false,
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "typescript.tsserver.maxTsServerMemory": 1024,
+    "search.followSymlinks": false,
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/.hg/store/**": true,
+        "**/dist/**": true,
+        "**/build/**": true,
+        "**/.next/**": true,
+        "**/.venv/**": true,
+        "**/venv/**": true,
+        "**/target/**": true
+    }
 }

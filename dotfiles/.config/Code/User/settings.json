@@ -11,5 +11,19 @@
     },
     "cph.general.defaultLanguage": "python",
     "cph.general.includeProblemIndex": true,
-    "cph.general.defaultLanguageTemplateFileLocation": "/home/singhvi28/Desktop/DSA/template/python-template/boilerplate.py"
+    "cph.general.defaultLanguageTemplateFileLocation": "/home/singhvi28/Desktop/DSA/template/python-template/boilerplate.py",
+    "typescript.tsserver.maxTsServerMemory": 1024,
+    "search.followSymlinks": false,
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/.hg/store/**": true,
+        "**/dist/**": true,
+        "**/build/**": true,
+        "**/.next/**": true,
+        "**/.venv/**": true,
+        "**/venv/**": true,
+        "**/target/**": true
+    }
 }

@@ -9,8 +9,27 @@ sudo apt update
 # 2. Install base essentials
 sudo apt install -y curl wget git gpg ca-certificates software-properties-common apt-transport-https build-essential iw dmidecode
 
-# 3. Apply sysctl optimizations (Swappiness & Network TTL)
-echo "==> Applying sysctl optimizations (swappiness=20, TTL=65)..."
+# 3. Memory Compression (zswap + zstd) & Sysctl Optimizations
+echo "==> Configuring zswap RAM compression (zstd) & sysctl optimizations..."
+sudo modprobe zstd || true
+sudo mkdir -p /etc/modules-load.d
+sudo cp "$(dirname "$0")/../configs/modules/zswap.conf" /etc/modules-load.d/zswap.conf
+
+# Enable live zswap parameters if supported
+if [ -d /sys/module/zswap/parameters ]; then
+    echo zstd | sudo tee /sys/module/zswap/parameters/compressor 2>/dev/null || echo lzo | sudo tee /sys/module/zswap/parameters/compressor
+    echo 25 | sudo tee /sys/module/zswap/parameters/max_pool_percent >/dev/null
+    echo 1 | sudo tee /sys/module/zswap/parameters/enabled >/dev/null
+fi
+
+# Make zswap persistent via GRUB
+sudo mkdir -p /etc/default/grub.d
+sudo cp "$(dirname "$0")/../configs/grub/99-zswap.cfg" /etc/default/grub.d/99-zswap.cfg
+if command -v update-grub >/dev/null 2>&1; then
+    sudo update-grub
+fi
+
+# Apply sysctl optimizations (swappiness=80, vfs_cache_pressure=50, TTL=65)
 sudo cp "$(dirname "$0")/../configs/sysctl/99-swappiness.conf" /etc/sysctl.d/99-swappiness.conf
 sudo cp "$(dirname "$0")/../configs/sysctl/99-network-ttl.conf" /etc/sysctl.d/99-network-ttl.conf
 sudo sysctl --system

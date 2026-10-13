@@ -63,8 +63,10 @@ cd ~/ubuntu-setup
 ## 🎯 Key Customizations Overview
 
 ### 1. System & Kernel Optimizations
-- **Swappiness Reduction** (`/etc/sysctl.d/99-swappiness.conf`):
-  - `vm.swappiness = 20` (prevents early aggressive swapping and keeps RAM responsive).
+- **Memory-CPU Tradeoff & Zswap In-RAM Compression** (`/etc/sysctl.d/99-swappiness.conf`, `/etc/default/grub.d/99-zswap.cfg`):
+  - **Zswap + Zstd**: In-kernel memory compression intercepts swap pages and compresses them into a 25% in-RAM pool using the 16-thread Ryzen CPU (~3:1 ratio), effectively expanding working memory while avoiding slow disk paging.
+  - `vm.swappiness = 80`: Proactively moves idle anonymous memory pages into the compressed RAM pool using CPU rather than dropping filesystem caches.
+  - `vm.vfs_cache_pressure = 50`: Preserves filesystem directory and inode caches in memory.
 - **Network TTL Modification** (`/etc/sysctl.d/99-network-ttl.conf`):
   - `net.ipv4.ip_default_ttl = 65` and `net.ipv6.conf.all.hop_limit = 65` (optimizes packet forwarding and hotspot/tethering throughput).
 - **Wayland Fractional Scaling**:
@@ -120,7 +122,10 @@ The following official upstream repositories and PPAs are configured with modern
 ### 6. Databases & Memory Footprint Optimization
 Native local database engines are installed:
 - **PostgreSQL 16**, **MySQL Server**, **Redis Server**, **RabbitMQ**, **MongoDB 7.0**, **Docker Engine**.
-- **Memory Footprint Optimization**: Automatic boot startup for all database services is disabled (`systemctl disable`). Databases run **on-demand**, freeing up ~2GB of RAM on startup.
+- **On-Demand Daemons**: Automatic boot startup for all database services is disabled (`systemctl disable`). Databases run **on-demand**, freeing up ~2GB of RAM on startup.
+- **Node.js Heap Optimization**: `export NODE_OPTIONS="--max-old-space-size=2048"` in `.bashrc_custom` forces V8/Node runtimes to run compacting garbage collection earlier instead of ballooning up to 4+ GB of RAM.
+- **IDE RAM Capping (VS Code / Insiders / Cursor)**: `typescript.tsserver.maxTsServerMemory` capped at 1024MB, symlink following disabled during search, and heavy build directories (`node_modules`, `build`, `dist`, `.venv`, `.git/objects`) excluded from the file-system watcher daemon.
+- **Browser Memory Saver**: Brave configured with aggressive tab discarding and hardware rasterization offloading.
 
 ### 7. GNOME Desktop, Pop Shell Tiling & Extensions
 - **Pop Shell Tiling Window Manager** (`pop-shell@system76.com`):
