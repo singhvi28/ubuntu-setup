@@ -8,6 +8,9 @@ KillMode=none
 ExecStart=/usr/bin/screen -d -m -S rtorrent /usr/bin/rtorrent
 ExecStop=/usr/bin/screen -S rtorrent -X quit
 Restart=on-failure
+MemoryHigh=384M
+MemoryMax=640M
+MemorySwapMax=512M
 
 [Install]
 WantedBy=default.target

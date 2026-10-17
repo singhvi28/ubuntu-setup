@@ -26,10 +26,17 @@ sudo apt install -y pipx || true
 pipx ensurepath || true
 pipx install yt-dlp || true
 
-# 4. Ollama (Local LLM Inference Engine)
+# 4. Ollama (Local LLM Inference Engine) + KV-Cache Quantization & Auto-Unload Override
 if ! command -v ollama &>/dev/null; then
     echo "==> Installing Ollama for local LLM inference..."
     curl -fsSL https://ollama.com/install.sh | sh || true
+fi
+if [ -f "$(dirname "$0")/../configs/systemd/ollama-memory-override.conf" ]; then
+    echo "==> Applying Ollama memory optimization override (Flash Attention, q8_0 KV-cache, 3m keep-alive)..."
+    sudo mkdir -p /etc/systemd/system/ollama.service.d
+    sudo cp "$(dirname "$0")/../configs/systemd/ollama-memory-override.conf" /etc/systemd/system/ollama.service.d/override.conf
+    sudo systemctl daemon-reload || true
+    sudo systemctl try-restart ollama.service 2>/dev/null || true
 fi
 
 # 5. Official Neovim Binary (/opt/nvim-linux-x86_64)
@@ -42,11 +49,10 @@ if [ ! -d "/opt/nvim-linux-x86_64" ]; then
     rm -rf "$TEMP_DIR"
 fi
 
-# 6. Go Runtime
+# 6. Go Runtime (Dynamically resolves latest stable release with fallback)
 if [ ! -d "$HOME/.local/go" ] && ! command -v go &>/dev/null; then
-    echo "==> Installing Go 1.23.6 to ~/.local/go..."
-    GO_VERSION="1.23.6"
-    GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
+    GO_TAR=$(curl -fsSL "https://go.dev/VERSION?m=text" 2>/dev/null | head -n1 || echo "go1.23.6").linux-amd64.tar.gz
+    echo "==> Installing ${GO_TAR} to ~/.local/go..."
     TEMP_DIR=$(mktemp -d)
     curl -fsSL "https://go.dev/dl/${GO_TAR}" -o "$TEMP_DIR/${GO_TAR}"
     mkdir -p "$HOME/.local"
@@ -55,28 +61,18 @@ if [ ! -d "$HOME/.local/go" ] && ! command -v go &>/dev/null; then
     mkdir -p "$HOME/go/bin" "$HOME/go/src" "$HOME/go/pkg"
 fi
 
-# 7. VS Code Extensions
-if command -v code &>/dev/null; then
-    VSCODE_LIST="$(dirname "$0")/../packages/vscode-extensions.list"
-    if [ -f "$VSCODE_LIST" ]; then
-        echo "==> Installing VS Code extensions..."
-        while IFS= read -r ext || [ -n "$ext" ]; do
-            [[ "$ext" =~ ^#.*$ || -z "$ext" ]] && continue
-            code --install-extension "$ext" --force || true
-        done < "$VSCODE_LIST"
+# 7. Parallel IDE Extension Installer (VS Code, Code Insiders & Cursor)
+install_ide_extensions() {
+    local bin_name="$1"
+    local list_file="$2"
+    if command -v "$bin_name" &>/dev/null && [ -f "$list_file" ]; then
+        echo "==> Installing $bin_name extensions in parallel (4 workers)..."
+        grep -vE '^\s*#|^\s*$' "$list_file" | xargs -r -n 1 -P 4 -I {} "$bin_name" --install-extension "{}" --force || true
     fi
-fi
+}
 
-# 8. Cursor Extensions
-if command -v cursor &>/dev/null; then
-    CURSOR_LIST="$(dirname "$0")/../packages/cursor-extensions.list"
-    if [ -f "$CURSOR_LIST" ]; then
-        echo "==> Installing Cursor extensions..."
-        while IFS= read -r ext || [ -n "$ext" ]; do
-            [[ "$ext" =~ ^#.*$ || -z "$ext" ]] && continue
-            cursor --install-extension "$ext" --force || true
-        done < "$CURSOR_LIST"
-    fi
-fi
+install_ide_extensions "code" "$(dirname "$0")/../packages/vscode-extensions.list"
+install_ide_extensions "code-insiders" "$(dirname "$0")/../packages/code-insiders-extensions.list"
+install_ide_extensions "cursor" "$(dirname "$0")/../packages/cursor-extensions.list"
 
 echo "==> Development runtimes setup complete!"

@@ -8,6 +8,20 @@
   "code-runner.executorMapByGlob": {
     "pom.xml": "cd $dir && mvn clean package"
   },
+  "typescript.tsserver.maxTsServerMemory": 1024,
+  "search.followSymlinks": false,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.hg/store/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.next/**": true,
+    "**/.venv/**": true,
+    "**/venv/**": true,
+    "**/target/**": true
+  },
   "app": {
     "configGeneralDisplayLanguage": "en-us",
     "configGeneralAiResponseLanguage": "en-us",

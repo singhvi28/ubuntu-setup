@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# ram-status - Live CPU-for-RAM Compression & Deduplication Telemetry
+# Shows physical RAM, zswap (zstd) compression ratio & savings, KSM page
+# deduplication savings, MGLRU status, and combined effective RAM gained.
+# ==============================================================================
+set -euo pipefail
+
+BOLD='\033[1m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo -e "${CYAN}${BOLD}============================================================${NC}"
+echo -e "${CYAN}${BOLD}       🧠 Live CPU-for-RAM Optimization Telemetry           ${NC}"
+echo -e "${CYAN}${BOLD}============================================================${NC}"
+
+# 1. Standard Memory Overview
+free -h
+echo ""
+
+# 2. zswap (zstd) In-RAM Compression Telemetry
+ZSWAP_KB=$(awk '/^Zswap:/ {print $2}' /proc/meminfo 2>/dev/null || echo 0)
+ZSWAPPED_KB=$(awk '/^Zswapped:/ {print $2}' /proc/meminfo 2>/dev/null || echo 0)
+ZSWAP_SAVED_MIB=$(awk -v zs="$ZSWAP_KB" -v zsw="$ZSWAPPED_KB" 'BEGIN { printf "%.1f", (zsw - zs) / 1024 }')
+ZSWAP_RATIO=$(awk -v zs="$ZSWAP_KB" -v zsw="$ZSWAPPED_KB" 'BEGIN { if (zs > 0) printf "%.2fx", zsw / zs; else print "N/A" }')
+ZSWAP_COMP=$(cat /sys/module/zswap/parameters/compressor 2>/dev/null || echo "unknown")
+ZSWAP_POOL=$(cat /sys/module/zswap/parameters/max_pool_percent 2>/dev/null || echo "0")
+
+echo -e "${BOLD}--- 1. zswap In-RAM Compression (${ZSWAP_COMP}, ${ZSWAP_POOL}% max pool) ---${NC}"
+printf "  Compressed Data (Zswapped) : %.1f MiB\n" "$(awk -v v="$ZSWAPPED_KB" 'BEGIN {print v/1024}')"
+printf "  Physical RAM Used (Zswap)  : %.1f MiB\n" "$(awk -v v="$ZSWAP_KB" 'BEGIN {print v/1024}')"
+echo -e "  Compression Ratio          : ${GREEN}${BOLD}${ZSWAP_RATIO}${NC}"
+echo -e "  Net RAM Saved by zswap     : ${GREEN}${BOLD}+${ZSWAP_SAVED_MIB} MiB${NC}"
+echo ""
+
+# 3. KSM (Kernel Samepage Merging) Deduplication Telemetry
+KSM_SHARED=$(cat /sys/kernel/mm/ksm/pages_shared 2>/dev/null || echo 0)
+KSM_SHARING=$(cat /sys/kernel/mm/ksm/pages_sharing 2>/dev/null || echo 0)
+KSM_ZERO=$(cat /sys/kernel/mm/ksm/ksm_zero_pages 2>/dev/null || echo 0)
+KSM_SAVED_MIB=$(awk -v s="$KSM_SHARING" -v z="$KSM_ZERO" 'BEGIN { printf "%.1f", (s + z) * 4 / 1024 }')
+KSM_ADVISOR=$(cat /sys/kernel/mm/ksm/advisor_mode 2>/dev/null || echo "unknown")
+KSM_MAX_CPU=$(cat /sys/kernel/mm/ksm/advisor_max_cpu 2>/dev/null || echo "0")
+
+echo -e "${BOLD}--- 2. KSM Page Deduplication (advisor: ${KSM_ADVISOR}, max CPU: ${KSM_MAX_CPU}%) ---${NC}"
+echo "  Duplicate 4K Pages Merged  : ${KSM_SHARING} (into ${KSM_SHARED} unique pages)"
+echo "  Zero 4K Pages Merged       : ${KSM_ZERO}"
+echo -e "  Net RAM Saved by KSM       : ${GREEN}${BOLD}+${KSM_SAVED_MIB} MiB${NC}"
+echo ""
+
+# 4. Total Combined RAM Gained via CPU
+TOTAL_SAVED_MIB=$(awk -v zs="$ZSWAP_SAVED_MIB" -v ks="$KSM_SAVED_MIB" 'BEGIN { printf "%.1f", zs + ks }')
+RECLAIMER_STATE=$(systemctl is-active cpu-ram-reclaimer.service 2>/dev/null || echo "inactive")
+SWAPPINESS=$(sysctl -n vm.swappiness 2>/dev/null || echo "unknown")
+PAGE_CLUSTER=$(sysctl -n vm.page-cluster 2>/dev/null || echo "unknown")
+
+echo -e "${BOLD}--- 3. Combined Summary & Active Daemons ---${NC}"
+echo "  Cgroup Reclaimer Daemon    : ${RECLAIMER_STATE} (vm.swappiness=${SWAPPINESS}, page-cluster=${PAGE_CLUSTER})"
+echo -e "  Total RAM Saved via CPU    : ${YELLOW}${BOLD}+${TOTAL_SAVED_MIB} MiB${NC}"
+echo -e "${CYAN}${BOLD}============================================================${NC}"

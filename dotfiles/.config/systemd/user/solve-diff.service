@@ -3,9 +3,11 @@ Description=Solve Diff Streamlit App
 After=network.target
 
 [Service]
-WorkingDirectory=/home/singhvi28/solve-diff
-ExecStart=/home/singhvi28/.local/bin/streamlit run app.py --server.port=8501 --server.headless=true
+WorkingDirectory=%h/solve-diff
+ExecStart=%h/.local/bin/streamlit run app.py --server.port=8501 --server.headless=true
 Restart=always
+MemoryHigh=256M
+MemoryMax=512M
 
 [Install]
 WantedBy=default.target

@@ -33,27 +33,18 @@ mkdir -p "$HOME/.local/bin"
 cp "$DOTFILES_DIR/.local/bin/"* "$HOME/.local/bin/"
 chmod +x "$HOME/.local/bin/"*
 
-# 6. Append custom bash configuration if not already present
+# 6. Deploy ~/.bashrc_custom and source it from ~/.bashrc (single source of truth)
+echo "==> Deploying ~/.bashrc_custom and linking in ~/.bashrc..."
+sed "s|/home/singhvi28|$HOME|g" "$DOTFILES_DIR/.bashrc_custom" > "$HOME/.bashrc_custom"
+
 BASHRC="$HOME/.bashrc"
-if ! grep -q "ubuntu-setup / custom aliases" "$BASHRC" 2>/dev/null; then
-    echo "==> Appending custom aliases and PATHs to ~/.bashrc..."
+if ! grep -q "\.bashrc_custom" "$BASHRC" 2>/dev/null; then
     cat << 'BASH_EOF' >> "$BASHRC"
 
-# === ubuntu-setup / custom aliases & PATHs ===
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="/opt/nvim-linux-x86_64/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
-
-alias cf-check='cd /home/singhvi28/solve-diff && streamlit run app.py'
-alias solve-diff='cd /home/singhvi28/solve-diff && streamlit run app.py'
-alias cheese="GDK_BACKEND=x11 cheese"
-alias brave2='brave-browser --user-agent="Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"'
-alias updateall='sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
-
-# Memory-CPU Tradeoff: Limit Node heap size to trigger earlier GC & memory compaction
-export NODE_OPTIONS="--max-old-space-size=2048"
-# ============================================
+# Load ubuntu-setup custom aliases, PATHs, and CPU-for-RAM tunables
+if [ -f "$HOME/.bashrc_custom" ]; then
+    . "$HOME/.bashrc_custom"
+fi
 BASH_EOF
 fi
 

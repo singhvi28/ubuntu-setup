@@ -22,7 +22,7 @@ if [ ! -d "/data" ]; then
     mkdir -p "$HOME/data"
 fi
 
-cp "$(dirname "$0")/../dotfiles/.rtorrent.rc" "$HOME/.rtorrent.rc"
+sed "s|/home/singhvi28|$HOME|g" "$(dirname "$0")/../dotfiles/.rtorrent.rc" > "$HOME/.rtorrent.rc"
 cp "$(dirname "$0")/../dotfiles/.config/systemd/user/rtorrent.service" "$HOME/.config/systemd/user/rtorrent.service"
 
 # 4. Setup Solve-Diff Streamlit Systemd Service

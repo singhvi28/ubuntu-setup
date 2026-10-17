@@ -118,6 +118,9 @@ The following official upstream repositories and PPAs are configured with modern
 
 ### 5. Local AI & LLM Inference (Ollama)
 - **Ollama Engine**: Local LLM runner installed as an active systemd service (`ollama.service`).
+- **Memory & KV-Cache Optimization (`configs/systemd/ollama-memory-override.conf`)**:
+  - `OLLAMA_FLASH_ATTENTION=1` & `OLLAMA_KV_CACHE_TYPE=q8_0`: Halves context KV-cache memory consumption using compute quantization.
+  - `OLLAMA_KEEP_ALIVE=3m` & `OLLAMA_MAX_LOADED_MODELS=1`: Automatically unloads idle LLMs from RAM/VRAM after 3 minutes instead of pinning gigabytes of memory.
 - Enables CPU + Vulkan GPU acceleration for fast local code assistance and small parameter models (e.g. `qwen2.5-coder:7b`, `deepseek-r1:8b`).
 
 ### 6. Databases & Memory Footprint Optimization
@@ -125,7 +128,7 @@ Native local database engines are installed:
 - **PostgreSQL 16**, **MySQL Server**, **Redis Server**, **RabbitMQ**, **MongoDB 7.0**, **Docker Engine**.
 - **On-Demand Daemons**: Automatic boot startup for all database services is disabled (`systemctl disable`). Databases run **on-demand**, freeing up ~2GB of RAM on startup.
 - **Node.js Heap Optimization**: `export NODE_OPTIONS="--max-old-space-size=2048"` in `.bashrc_custom` forces V8/Node runtimes to run compacting garbage collection earlier instead of ballooning up to 4+ GB of RAM.
-- **IDE RAM Capping (VS Code / Insiders / Cursor)**: `typescript.tsserver.maxTsServerMemory` capped at 1024MB, symlink following disabled during search, and heavy build directories (`node_modules`, `build`, `dist`, `.venv`, `.git/objects`) excluded from the file-system watcher daemon.
+- **IDE RAM Capping (VS Code / Insiders / Cursor / Qoder)**: `typescript.tsserver.maxTsServerMemory` capped at 1024MB, symlink following disabled during search, and heavy build directories (`node_modules`, `build`, `dist`, `.venv`, `.git/objects`) excluded from the file-system watcher daemon.
 - **Browser Memory Saver**: Brave configured with aggressive tab discarding and hardware rasterization offloading.
 
 ### 7. GNOME Desktop, Pop Shell Tiling & Extensions
@@ -156,10 +159,12 @@ Native local database engines are installed:
 
 ### 9. Background Daemons & Services (`rtorrent`, `solve-diff`)
 - **Systemd User Lingering** enabled (`loginctl enable-linger`) so user services continue running without active graphical sessions.
+- **Cgroup v2 Memory Guardrails**: Both user services enforce `MemoryHigh` / `MemoryMax` cgroup limits and rTorrent piece cache is capped at `256M`, ensuring background daemons softly compress into `zswap` instead of pinning physical RAM.
 - **`rtorrent.service`**: Headless BitTorrent client in detached screen session with SCGI socket at `~/.rtorrent/session/rpc.sock`.
 - **`solve-diff.service`**: Background Streamlit service for Competitive Programming problem diff solver, accessible on `http://localhost:8501`.
 
 ### 10. Custom Scripts & Binaries (`~/.local/bin/`)
+- `ram-status`: Live telemetry dashboard displaying physical RAM, `zswap` (`zstd`) compression ratio & savings, `KSM` page deduplication savings, and combined RAM gained via CPU.
 - `rt`: rTorrent client CLI with XML-RPC socket queries.
 - `playlist` & `playlist-length`: Universal Playlist Duration Calculator for local directories and YouTube playlists.
 - `motrix`: Flatpak runner wrapper.
