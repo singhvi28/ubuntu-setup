@@ -1,0 +1,15 @@
+[Unit]
+Description=Active CPU-for-RAM Cold Page Compressor (zswap + KSM helper)
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/cpu-ram-reclaimer.sh
+Restart=always
+RestartSec=5
+Nice=19
+CPUSchedulingPolicy=idle
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

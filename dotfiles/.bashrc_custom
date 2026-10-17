@@ -14,3 +14,7 @@ alias updateall='sudo apt update && sudo apt full-upgrade -y && sudo apt autorem
 
 # Memory-CPU Tradeoff: Limit Node heap size to trigger earlier GC & memory compaction
 export NODE_OPTIONS="--max-old-space-size=2048"
+
+# Enable KSM memory deduplication for this shell and all child processes (PR_SET_MEMORY_MERGE=67)
+python3 -c "import ctypes; ctypes.CDLL(None).prctl(67, 1, 0, 0, 0)" 2>/dev/null || true
+

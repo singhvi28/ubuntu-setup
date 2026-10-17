@@ -9,18 +9,13 @@ sudo apt update
 # 2. Install base essentials
 sudo apt install -y curl wget git gpg ca-certificates software-properties-common apt-transport-https build-essential iw dmidecode
 
-# 3. Memory Compression (zswap + zstd) & Sysctl Optimizations
-echo "==> Configuring zswap RAM compression (zstd) & sysctl optimizations..."
+# 3. Memory Compression (zswap + zstd), KSM Deduplication & Sysctl Optimizations
+echo "==> Configuring zswap RAM compression (zstd 60%), KSM deduplication & sysctl optimizations..."
 sudo modprobe zstd || true
-sudo mkdir -p /etc/modules-load.d
+sudo mkdir -p /etc/modules-load.d /etc/tmpfiles.d
 sudo cp "$(dirname "$0")/../configs/modules/zswap.conf" /etc/modules-load.d/zswap.conf
-
-# Enable live zswap parameters if supported
-if [ -d /sys/module/zswap/parameters ]; then
-    echo zstd | sudo tee /sys/module/zswap/parameters/compressor 2>/dev/null || echo lzo | sudo tee /sys/module/zswap/parameters/compressor
-    echo 25 | sudo tee /sys/module/zswap/parameters/max_pool_percent >/dev/null
-    echo 1 | sudo tee /sys/module/zswap/parameters/enabled >/dev/null
-fi
+sudo cp "$(dirname "$0")/../configs/tmpfiles.d/memory-cpu-tradeoff.conf" /etc/tmpfiles.d/memory-cpu-tradeoff.conf
+sudo systemd-tmpfiles --create /etc/tmpfiles.d/memory-cpu-tradeoff.conf || true
 
 # Make zswap persistent via GRUB
 sudo mkdir -p /etc/default/grub.d
@@ -29,8 +24,9 @@ if command -v update-grub >/dev/null 2>&1; then
     sudo update-grub
 fi
 
-# Apply sysctl optimizations (swappiness=80, vfs_cache_pressure=50, TTL=65)
-sudo cp "$(dirname "$0")/../configs/sysctl/99-swappiness.conf" /etc/sysctl.d/99-swappiness.conf
+# Apply sysctl optimizations (swappiness=180, page-cluster=0, compaction_proactiveness=80, TTL=65)
+sudo cp "$(dirname "$0")/../configs/sysctl/99-swappiness.conf" /etc/sysctl.d/99-zswap-tradeoff.conf
+sudo rm -f /etc/sysctl.d/99-swappiness.conf
 sudo cp "$(dirname "$0")/../configs/sysctl/99-network-ttl.conf" /etc/sysctl.d/99-network-ttl.conf
 sudo sysctl --system
 
