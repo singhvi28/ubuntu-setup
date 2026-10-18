@@ -18,7 +18,7 @@ sudo cp "$(dirname "$0")/../configs/modules/zswap.conf" /etc/modules-load.d/zswa
 # Enable live zswap parameters if supported
 if [ -d /sys/module/zswap/parameters ]; then
     echo zstd | sudo tee /sys/module/zswap/parameters/compressor 2>/dev/null || echo lzo | sudo tee /sys/module/zswap/parameters/compressor
-    echo 25 | sudo tee /sys/module/zswap/parameters/max_pool_percent >/dev/null
+    echo 60 | sudo tee /sys/module/zswap/parameters/max_pool_percent >/dev/null
     echo 1 | sudo tee /sys/module/zswap/parameters/enabled >/dev/null
 fi
 
@@ -29,7 +29,7 @@ if command -v update-grub >/dev/null 2>&1; then
     sudo update-grub
 fi
 
-# Apply sysctl optimizations (swappiness=80, vfs_cache_pressure=50, TTL=65)
+# Apply sysctl optimizations (swappiness=80, page-cluster=0, vfs_cache_pressure=100, TTL=65)
 sudo cp "$(dirname "$0")/../configs/sysctl/99-swappiness.conf" /etc/sysctl.d/99-swappiness.conf
 sudo cp "$(dirname "$0")/../configs/sysctl/99-network-ttl.conf" /etc/sysctl.d/99-network-ttl.conf
 sudo sysctl --system

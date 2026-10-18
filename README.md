@@ -64,9 +64,10 @@ cd ~/ubuntu-setup
 
 ### 1. System & Kernel Optimizations
 - **Memory-CPU Tradeoff & Zswap In-RAM Compression** (`/etc/sysctl.d/99-swappiness.conf`, `/etc/default/grub.d/99-zswap.cfg`):
-  - **Zswap + Zstd**: In-kernel memory compression intercepts swap pages and compresses them into a 25% in-RAM pool using the 16-thread Ryzen CPU (~3:1 ratio), effectively expanding working memory while avoiding slow disk paging.
+  - **Zswap + Zstd (60% Pool, 95% Threshold)**: In-kernel memory compression intercepts swap pages and compresses them into a 60% in-RAM pool using the 16-thread Ryzen CPU (~3.5:1 ratio), effectively expanding working memory while avoiding slow disk paging.
   - `vm.swappiness = 80`: Proactively moves idle anonymous memory pages into the compressed RAM pool using CPU rather than dropping filesystem caches.
-  - `vm.vfs_cache_pressure = 50`: Preserves filesystem directory and inode caches in memory.
+  - `vm.page-cluster = 0`: Decompresses single 4KB pages on fault for sub-millisecond RAM response times without read-ahead stalls.
+  - `vm.vfs_cache_pressure = 100`: Reclaims filesystem directory and inode caches at a healthy rate.
 - **Network TTL Modification** (`/etc/sysctl.d/99-network-ttl.conf`):
   - `net.ipv4.ip_default_ttl = 65` and `net.ipv6.conf.all.hop_limit = 65` (optimizes packet forwarding and hotspot/tethering throughput).
 - **Wayland Fractional Scaling**:
