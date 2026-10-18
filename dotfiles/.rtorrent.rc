@@ -42,8 +42,8 @@ throttle.global_up.max_rate.set_kb = 0
 # Check hash for finished torrents
 pieces.hash.on_completion.set = yes
 
-# Maximum memory usage for caching piece data (256 MB - prevents pinning 1GB RAM)
-pieces.memory.max.set = 256M
+# Maximum memory usage for caching piece data (1024 MB)
+pieces.memory.max.set = 1024M
 
 # Clean up stale SCGI socket if it exists and open Unix domain socket for XML-RPC
 execute.nothrow = rm, /home/singhvi28/.rtorrent/session/rpc.sock

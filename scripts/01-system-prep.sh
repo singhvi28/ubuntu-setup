@@ -31,11 +31,7 @@ sudo cp "$(dirname "$0")/../configs/sysctl/99-network-ttl.conf" /etc/sysctl.d/99
 sudo sysctl --system
 
 # 4. Optional: auto-cpufreq (Battery & Thermal Optimization for Laptops)
-if [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
-    INSTALL_AUTOCPU="n"
-else
-    read -p "Do you want to install auto-cpufreq for automatic CPU frequency/battery optimization? [y/N]: " -r INSTALL_AUTOCPU
-fi
+read -p "Do you want to install auto-cpufreq for automatic CPU frequency/battery optimization? [y/N]: " -r INSTALL_AUTOCPU
 if [[ "$INSTALL_AUTOCPU" =~ ^[Yy]$ ]]; then
     echo "==> Installing auto-cpufreq..."
     TEMP_DIR=$(mktemp -d)
@@ -45,11 +41,7 @@ if [[ "$INSTALL_AUTOCPU" =~ ^[Yy]$ ]]; then
 fi
 
 # 5. Optional: Remove Snapd and install Flatpak
-if [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
-    REMOVE_SNAP="y"
-else
-    read -p "Do you want to completely remove snapd and configure Flatpak + Flathub? [y/N]: " -r REMOVE_SNAP
-fi
+read -p "Do you want to completely remove snapd and configure Flatpak + Flathub? [y/N]: " -r REMOVE_SNAP
 if [[ "$REMOVE_SNAP" =~ ^[Yy]$ ]]; then
     echo "==> Removing Snapd..."
     sudo snap list 2>/dev/null | awk 'NR>1 {print $1}' | while read -r snap_name; do

@@ -52,11 +52,7 @@ run_all() {
     run_step "11-browser-extensions.sh" "Browser Extensions Provisioning (Brave & Chrome)"
     run_step "12-optimize-ram-cpu.sh" "Aggressive CPU-for-RAM Optimization (zswap 60%, KSM, Cgroup Reclaimer)"
     
-    if [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
-        APPLY_NSFW="n"
-    else
-        read -p "Do you want to configure NSFW website restrictions & SafeSearch? [y/N]: " -r APPLY_NSFW
-    fi
+    read -p "Do you want to configure NSFW website restrictions & SafeSearch? [y/N]: " -r APPLY_NSFW
     if [[ "$APPLY_NSFW" =~ ^[Yy]$ ]]; then
         run_step "10-nsfw-restrictions.sh" "NSFW Website Restrictions & SafeSearch"
     fi
@@ -90,7 +86,6 @@ print_menu() {
 if [ "$#" -gt 0 ]; then
     case "$1" in
         --all|-a)
-            export NONINTERACTIVE=1
             run_all
             exit 0
             ;;
