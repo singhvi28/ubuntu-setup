@@ -63,11 +63,10 @@ cd ~/ubuntu-setup
 ## 🎯 Key Customizations Overview
 
 ### 1. System & Kernel Optimizations
-- **Aggressive Memory-CPU Tradeoff (`scripts/12-optimize-ram-cpu.sh`)**:
-  - **Zswap + Zstd (60% Pool, 95% Threshold)**: In-kernel memory compression intercepts cold anonymous pages and compresses them into a 60% in-RAM pool using the 16-thread Ryzen CPU (~3.3:1 ratio), expanding effective working memory from 13 GiB to ~20+ GiB while avoiding SSD paging.
-  - **Kernel Samepage Merging (KSM) + `PR_SET_MEMORY_MERGE`**: Uses Linux 6.7+ `prctl(67, 1)` fork-inheritance and the `scan-time` advisor (`advisor_max_cpu=90%`, `sleep_millisecs=15`, `use_zero_pages=1`) to automatically deduplicate identical 4K memory pages across browsers, Electron apps, and runtimes while skipping `seccomp-bpf` sandboxed child threads.
-  - **Active Cgroup v2 Cold-Page Compressor (`cpu-ram-reclaimer.service`)**: Runs at `idle` CPU priority (`Nice=19`) and continuously pushes cold anonymous pages from `user.slice` and `system.slice` into `zstd`-compressed `zswap` via `/sys/fs/cgroup/*/memory.reclaim` before memory pressure hits.
-  - **VM Sysctl Tuning** (`configs/sysctl/99-swappiness.conf`): `vm.swappiness = 180`, `vm.page-cluster = 0` (single-page zero-readahead latency), `vm.compaction_proactiveness = 80`, `vm.vfs_cache_pressure = 130`, and MGLRU `min_ttl_ms = 750`.
+- **Memory-CPU Tradeoff & Zswap In-RAM Compression** (`/etc/sysctl.d/99-swappiness.conf`, `/etc/default/grub.d/99-zswap.cfg`):
+  - **Zswap + Zstd**: In-kernel memory compression intercepts swap pages and compresses them into a 25% in-RAM pool using the 16-thread Ryzen CPU (~3:1 ratio), effectively expanding working memory while avoiding slow disk paging.
+  - `vm.swappiness = 80`: Proactively moves idle anonymous memory pages into the compressed RAM pool using CPU rather than dropping filesystem caches.
+  - `vm.vfs_cache_pressure = 50`: Preserves filesystem directory and inode caches in memory.
 - **Network TTL Modification** (`/etc/sysctl.d/99-network-ttl.conf`):
   - `net.ipv4.ip_default_ttl = 65` and `net.ipv6.conf.all.hop_limit = 65` (optimizes packet forwarding and hotspot/tethering throughput).
 - **Wayland Fractional Scaling**:
@@ -214,7 +213,6 @@ ubuntu-setup/
 │   ├── 09-face-unlock-howdy.sh        # Howdy IR facial recognition setup
 │   ├── 10-nsfw-restrictions.sh        # Interactive NSFW restriction manager
 │   ├── 11-browser-extensions.sh       # Automated Brave & Chrome extension provisioning
-│   ├── 12-optimize-ram-cpu.sh         # Aggressive CPU-for-RAM optimization (zswap, KSM, cgroup reclaimer)
 │   └── nsfw-restriction/              # Modular restriction scripts
 │       ├── apply.sh                   # Hardened installer (DNS, hosts, policies, firewall)
 │       ├── verify.sh                  # Non-root verification probe
@@ -246,11 +244,7 @@ ubuntu-setup/
 │   └── .local/bin/                    # Custom executables (rt, playlist, etc.)
 └── configs/
     ├── dconf/                         # Dconf dumps for GNOME, mutter, shell, pop-shell
-    ├── grub/                          # GRUB cmdline drop-in for zswap
-    ├── modules/                       # Kernel modules-load.d configs
     ├── sysctl/                        # Kernel & network tuning .conf files
-    ├── systemd/                       # Systemd daemon unit files (cpu-ram-reclaimer.service)
-    ├── tmpfiles.d/                    # Persistent sysfs tunables for zswap, KSM, and MGLRU
     ├── pam/                           # PAM configuration examples
     └── nsfw-restriction/              # DNS drop-in and browser policy JSON templates
 ```
