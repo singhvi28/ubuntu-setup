@@ -12,13 +12,23 @@ sudo apt install -y curl wget git gpg ca-certificates software-properties-common
 # 3. Memory Compression (zswap + zstd) & Sysctl Optimizations
 echo "==> Configuring zswap RAM compression (zstd) & sysctl optimizations..."
 sudo modprobe zstd || true
-sudo mkdir -p /etc/modules-load.d
+sudo mkdir -p /etc/modules-load.d /etc/tmpfiles.d
 sudo cp "$(dirname "$0")/../configs/modules/zswap.conf" /etc/modules-load.d/zswap.conf
+sudo cp "$(dirname "$0")/../configs/tmpfiles.d/zswap.conf" /etc/tmpfiles.d/zswap.conf
+
+# Add zstd to initramfs so early boot doesn't fall back to lzo
+if ! grep -q "^zstd" /etc/initramfs-tools/modules 2>/dev/null; then
+    echo "zstd" | sudo tee -a /etc/initramfs-tools/modules >/dev/null
+    if command -v update-initramfs >/dev/null 2>&1; then
+        sudo update-initramfs -u
+    fi
+fi
 
 # Enable live zswap parameters if supported
 if [ -d /sys/module/zswap/parameters ]; then
     echo zstd | sudo tee /sys/module/zswap/parameters/compressor 2>/dev/null || echo lzo | sudo tee /sys/module/zswap/parameters/compressor
     echo 60 | sudo tee /sys/module/zswap/parameters/max_pool_percent >/dev/null
+    echo 95 | sudo tee /sys/module/zswap/parameters/accept_threshold_percent >/dev/null 2>&1 || true
     echo 1 | sudo tee /sys/module/zswap/parameters/enabled >/dev/null
 fi
 

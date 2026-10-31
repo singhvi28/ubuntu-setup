@@ -15,13 +15,14 @@ echo "==> Installing MangoHud configuration..."
 mkdir -p "$HOME/.config/MangoHud"
 cp -r "$DOTFILES_DIR/.config/MangoHud/"* "$HOME/.config/MangoHud/"
 
-# 3. VS Code / Code Insiders / Cursor / Qoder settings
+# 3. VS Code / Code Insiders / Cursor / Qoder / Zed settings
 echo "==> Deploying IDE settings..."
-mkdir -p "$HOME/.config/Code/User" "$HOME/.config/Code - Insiders/User" "$HOME/.config/Cursor/User" "$HOME/.config/Qoder/User"
+mkdir -p "$HOME/.config/Code/User" "$HOME/.config/Code - Insiders/User" "$HOME/.config/Cursor/User" "$HOME/.config/Qoder/User" "$HOME/.config/zed"
 cp "$DOTFILES_DIR/.config/Code/User/"* "$HOME/.config/Code/User/" 2>/dev/null || true
 cp "$DOTFILES_DIR/.config/Code - Insiders/User/"* "$HOME/.config/Code - Insiders/User/" 2>/dev/null || true
 cp "$DOTFILES_DIR/.config/Cursor/User/"* "$HOME/.config/Cursor/User/" 2>/dev/null || true
 cp "$DOTFILES_DIR/.config/Qoder/User/"* "$HOME/.config/Qoder/User/" 2>/dev/null || true
+cp "$DOTFILES_DIR/.config/zed/"* "$HOME/.config/zed/" 2>/dev/null || true
 
 # 4. NPM & Conda configs
 cp "$DOTFILES_DIR/.npmrc" "$HOME/.npmrc" 2>/dev/null || true

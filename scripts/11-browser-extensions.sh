@@ -60,5 +60,13 @@ PYEOF
 fi
 
 echo ""
-echo "==> Browser extensions provisioned successfully!"
+echo "==> Deploying browser performance & memory policies (Hardware Acceleration + Memory Saver)..."
+POLICY_SRC="$SCRIPT_DIR/../configs/policies/performance.json"
+if [ -f "$POLICY_SRC" ]; then
+    sudo mkdir -p /etc/brave/policies/managed /etc/opt/chrome/policies/managed
+    sudo cp "$POLICY_SRC" /etc/brave/policies/managed/performance.json
+    sudo cp "$POLICY_SRC" /etc/opt/chrome/policies/managed/performance.json
+fi
+
+echo "==> Browser extensions and performance policies provisioned successfully!"
 echo "When you launch Brave or Chrome, the browser will automatically fetch and prompt to enable each extension."
