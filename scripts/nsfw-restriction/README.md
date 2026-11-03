@@ -14,7 +14,7 @@ Comprehensive system-wide NSFW content filtering and tamper-resistant anti-bypas
 2. **Enterprise Browser Policies:**
    - Pre-staged for **Chrome, Chromium, Brave, Microsoft Edge, Vivaldi, Opera, Firefox, LibreWolf, and Waterfox**.
    - Locks DNS-over-HTTPS (DoH) to **OFF** so browsers cannot bypass local/system DNS.
-   - Forces Google SafeSearch and YouTube Restricted Mode ON.
+   - Forces Google SafeSearch ON.
 
 3. **StevenBlack Curated Blocklist (`/etc/hosts`):**
    - 140,000+ adult domains redirected locally to `0.0.0.0`.

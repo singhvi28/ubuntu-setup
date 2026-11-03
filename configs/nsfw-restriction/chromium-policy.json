@@ -1,5 +1,4 @@
 {
   "DnsOverHttpsMode": "off",
-  "ForceGoogleSafeSearch": true,
-  "ForceYouTubeRestrict": 2
+  "ForceGoogleSafeSearch": true
 }
