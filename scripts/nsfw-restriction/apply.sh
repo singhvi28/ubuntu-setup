@@ -44,8 +44,8 @@ if [ -f "$CONFIGS_DIR/nsfw-filter.conf" ]; then
 else
     cat << 'EOF' > "$RESOLVED_CONF_DIR/nsfw-filter.conf"
 [Resolve]
-DNS=185.228.168.168#family-filter-dns.cleanbrowsing.org 185.228.169.168#family-filter-dns.cleanbrowsing.org 1.1.1.3#family.cloudflare-dns.com 1.0.0.3#family.cloudflare-dns.com 2a0d:5600:33:4::#family-filter-dns.cleanbrowsing.org 2a0d:5600:54:4::#family-filter-dns.cleanbrowsing.org 2606:4700:4700::1113#family.cloudflare-dns.com 2606:4700:4700::1003#family.cloudflare-dns.com
-FallbackDNS=185.228.168.168 1.1.1.3
+DNS=185.228.168.168#family-filter-dns.cleanbrowsing.org 185.228.169.168#family-filter-dns.cleanbrowsing.org 2a0d:5600:33:4::#family-filter-dns.cleanbrowsing.org 2a0d:5600:54:4::#family-filter-dns.cleanbrowsing.org
+FallbackDNS=185.228.168.168 185.228.169.168
 Domains=~.
 DNSOverTLS=opportunistic
 EOF
@@ -107,14 +107,46 @@ if curl -fsSL --connect-timeout 15 "https://raw.githubusercontent.com/StevenBlac
 
     # Copy the clean original base hosts first (preserving local hostname & docker)
     cat "$BACKUP_DIR/hosts.orig" > "$TEMP_MERGED"
-    echo "" >> "$TEMP_MERGED"
-    echo "# ==============================================================" >> "$TEMP_MERGED"
-    echo "# BEGIN NSFW BLOCKLIST - Managed by nsfw-restriction script" >> "$TEMP_MERGED"
-    echo "# Updated on: $(date -u)" >> "$TEMP_MERGED"
-    echo "# ==============================================================" >> "$TEMP_MERGED"
+    # Apply custom whitelist overrides if present
+    if [ -f "$CONFIGS_DIR/whitelist.txt" ]; then
+        echo "    Applying domain whitelist from $CONFIGS_DIR/whitelist.txt..."
+        echo "" >> "$TEMP_MERGED"
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+        echo "# BEGIN CUSTOM WHITELIST OVERRIDES" >> "$TEMP_MERGED"
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+        grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' "$CONFIGS_DIR/whitelist.txt" >> "$TEMP_MERGED" || true
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+        echo "# END CUSTOM WHITELIST OVERRIDES" >> "$TEMP_MERGED"
+        echo "" >> "$TEMP_MERGED"
 
-    # Append only domain entries starting with 0.0.0.0 (skipping 0.0.0.0 0.0.0.0)
-    grep -E '^0\.0\.0\.0[[:space:]]+[^0]' "$TEMP_HOSTS" >> "$TEMP_MERGED"
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+        echo "# BEGIN NSFW BLOCKLIST - Managed by nsfw-restriction script" >> "$TEMP_MERGED"
+        echo "# Updated on: $(date -u)" >> "$TEMP_MERGED"
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+
+        awk '
+            NR==FNR {
+                if ($0 ~ /^#/ || NF == 0) next
+                if ($1 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) {
+                    for (i=2; i<=NF; i++) wl[$i]=1
+                } else {
+                    wl[$1]=1
+                }
+                next
+            }
+            {
+                if (!($2 in wl)) print
+            }
+        ' "$CONFIGS_DIR/whitelist.txt" <(grep -E '^0\.0\.0\.0[[:space:]]+[^0]' "$TEMP_HOSTS") >> "$TEMP_MERGED"
+    else
+        echo "" >> "$TEMP_MERGED"
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+        echo "# BEGIN NSFW BLOCKLIST - Managed by nsfw-restriction script" >> "$TEMP_MERGED"
+        echo "# Updated on: $(date -u)" >> "$TEMP_MERGED"
+        echo "# ==============================================================" >> "$TEMP_MERGED"
+        # Append only domain entries starting with 0.0.0.0 (skipping 0.0.0.0 0.0.0.0)
+        grep -E '^0\.0\.0\.0[[:space:]]+[^0]' "$TEMP_HOSTS" >> "$TEMP_MERGED"
+    fi
 
     echo "# ==============================================================" >> "$TEMP_MERGED"
     echo "# END NSFW BLOCKLIST" >> "$TEMP_MERGED"

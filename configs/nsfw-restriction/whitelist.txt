@@ -1,0 +1,12 @@
+# ==============================================================================
+# Domain & Host Whitelist / Overrides
+# Repository: https://github.com/singhvi28/ubuntu-setup
+# Description: Domains listed here are excluded from the 0.0.0.0 blocklist.
+#              Lines starting with an IP address are appended directly to /etc/hosts
+#              to override upstream DNS false-positives.
+# ==============================================================================
+
+# Anime & Streaming platforms (false-positives in generic filters)
+hianimes.se
+www.hianimes.se
+104.21.49.22 hianimes.se www.hianimes.se

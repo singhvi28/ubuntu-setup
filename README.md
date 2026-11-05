@@ -169,7 +169,7 @@ Native local database engines are installed:
 
 ### 11. NSFW Website Restrictions & Anti-Bypass Defenses
 Multi-layered, tamper-resistant restriction suite ensuring adult content is blocked and SafeSearch is enforced across all browsers and connections:
-- **System-Wide Family DNS (`systemd-resolved`)**: Unconditionally routes all queries through CleanBrowsing Family (`185.228.168.168`) and Cloudflare Family (`1.1.1.3`), locking SafeSearch on Google, Bing, DuckDuckGo, and YouTube at the resolver level.
+- **System-Wide Family DNS (`systemd-resolved`)**: Unconditionally routes all queries through CleanBrowsing Family (`185.228.168.168` and `185.228.169.168`), locking SafeSearch on Google, Bing, and DuckDuckGo at the resolver level without false-positive blocking on general streaming/anime sites. Includes custom whitelist support (`whitelist.txt`).
 - **Enterprise Browser Policies**: Pre-staged for all Chromium (Chrome, Chromium, Brave, Edge, Vivaldi, Opera) and Firefox (Firefox, LibreWolf, Waterfox) families, locking DNS-over-HTTPS (DoH) OFF and locking Google SafeSearch ON.
 - **Offline Blocklist (`/etc/hosts`)**: Integrates StevenBlack's curated repository with 140,000+ adult domains mapped locally to `0.0.0.0`.
 - **Kernel Firewall Anti-Bypass (`iptables`)**: Prevents DNS leakage on port 53 and blocks unmanaged DoH endpoints (`1.1.1.1`, `8.8.8.8`, `9.9.9.9`), forcing newly downloaded or portable browsers (AppImages) to fail over to the filtered system resolver.

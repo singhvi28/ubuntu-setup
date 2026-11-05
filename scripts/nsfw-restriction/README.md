@@ -6,9 +6,9 @@ Comprehensive system-wide NSFW content filtering and tamper-resistant anti-bypas
 
 ## Features
 
-1. **CleanBrowsing & Cloudflare Family DNS (`systemd-resolved`):**
-   - Routes all system DNS requests through CleanBrowsing Family (`185.228.168.168`) and Cloudflare Family (`1.1.1.3`).
-   - Automatically forces SafeSearch on Google, Bing, DuckDuckGo, and YouTube at the resolver level.
+1. **CleanBrowsing Family DNS (`systemd-resolved`):**
+   - Routes all system DNS requests through CleanBrowsing Family (`185.228.168.168` and `185.228.169.168`).
+   - Automatically forces SafeSearch on Google, Bing, and DuckDuckGo at the resolver level.
    - Wildcard routing (`Domains=~.`) prevents interface-level DHCP override.
 
 2. **Enterprise Browser Policies:**
@@ -25,6 +25,11 @@ Comprehensive system-wide NSFW content filtering and tamper-resistant anti-bypas
    - Blocks rogue outbound Port 53 queries to unapproved DNS servers.
    - Rejects public unfiltered DoH IPs (`1.1.1.1`, `8.8.8.8`, `9.9.9.9`, etc.) so portable browsers (like AppImages) fail over immediately to the filtered system DNS.
    - Persistent across reboots via `nsfw-restriction-firewall.service`.
+
+5. **Custom Whitelist & False-Positive Overrides (`whitelist.txt`):**
+   - Place domain overrides in `configs/nsfw-restriction/whitelist.txt`.
+   - Domains listed are stripped from the 140k blocklist.
+   - Host entries with custom IPs (e.g. `104.21.49.22 hianimes.se`) are injected into `/etc/hosts` to override any upstream DNS false-positives.
 
 ---
 
