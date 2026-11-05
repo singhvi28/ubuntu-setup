@@ -44,8 +44,8 @@ if [ -f "$CONFIGS_DIR/nsfw-filter.conf" ]; then
 else
     cat << 'EOF' > "$RESOLVED_CONF_DIR/nsfw-filter.conf"
 [Resolve]
-DNS=185.228.168.168#family-filter-dns.cleanbrowsing.org 185.228.169.168#family-filter-dns.cleanbrowsing.org 2a0d:5600:33:4::#family-filter-dns.cleanbrowsing.org 2a0d:5600:54:4::#family-filter-dns.cleanbrowsing.org
-FallbackDNS=185.228.168.168 185.228.169.168
+DNS=185.228.168.10#adult-filter-dns.cleanbrowsing.org 185.228.169.11#adult-filter-dns.cleanbrowsing.org 2a0d:2a00:1::1#adult-filter-dns.cleanbrowsing.org 2a0d:2a00:2::1#adult-filter-dns.cleanbrowsing.org
+FallbackDNS=185.228.168.10 185.228.169.11
 Domains=~.
 DNSOverTLS=opportunistic
 EOF
@@ -177,17 +177,17 @@ set -euo pipefail
 # 1. Setup IPv4 chain
 iptables -N NSFW_RESTRICT 2>/dev/null || iptables -F NSFW_RESTRICT
 
-# Allow port 53 to trusted family DNS and local resolver
+# Allow port 53 to trusted adult-filter DNS and local resolver
+iptables -A NSFW_RESTRICT -p udp --dport 53 -d 185.228.168.10 -j ACCEPT
+iptables -A NSFW_RESTRICT -p udp --dport 53 -d 185.228.169.11 -j ACCEPT
 iptables -A NSFW_RESTRICT -p udp --dport 53 -d 185.228.168.168 -j ACCEPT
 iptables -A NSFW_RESTRICT -p udp --dport 53 -d 185.228.169.168 -j ACCEPT
-iptables -A NSFW_RESTRICT -p udp --dport 53 -d 1.1.1.3 -j ACCEPT
-iptables -A NSFW_RESTRICT -p udp --dport 53 -d 1.0.0.3 -j ACCEPT
 iptables -A NSFW_RESTRICT -p udp --dport 53 -d 127.0.0.1 -j ACCEPT
 iptables -A NSFW_RESTRICT -p udp --dport 53 -d 127.0.0.53 -j ACCEPT
+iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 185.228.168.10 -j ACCEPT
+iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 185.228.169.11 -j ACCEPT
 iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 185.228.168.168 -j ACCEPT
 iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 185.228.169.168 -j ACCEPT
-iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 1.1.1.3 -j ACCEPT
-iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 1.0.0.3 -j ACCEPT
 iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 127.0.0.1 -j ACCEPT
 iptables -A NSFW_RESTRICT -p tcp --dport 53 -d 127.0.0.53 -j ACCEPT
 
@@ -213,15 +213,15 @@ iptables -C OUTPUT -j NSFW_RESTRICT 2>/dev/null || iptables -I OUTPUT 1 -j NSFW_
 # 2. Setup IPv6 chain (if supported)
 if command -v ip6tables &>/dev/null; then
     ip6tables -N NSFW_RESTRICT 2>/dev/null || ip6tables -F NSFW_RESTRICT
+    ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d 2a0d:2a00:1::1 -j ACCEPT
+    ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d 2a0d:2a00:2::1 -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d 2a0d:5600:33:4:: -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d 2a0d:5600:54:4:: -j ACCEPT
-    ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d 2606:4700:4700::1113 -j ACCEPT
-    ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d 2606:4700:4700::1003 -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p udp --dport 53 -d ::1 -j ACCEPT
+    ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d 2a0d:2a00:1::1 -j ACCEPT
+    ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d 2a0d:2a00:2::1 -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d 2a0d:5600:33:4:: -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d 2a0d:5600:54:4:: -j ACCEPT
-    ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d 2606:4700:4700::1113 -j ACCEPT
-    ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d 2606:4700:4700::1003 -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -d ::1 -j ACCEPT
     ip6tables -A NSFW_RESTRICT -p udp --dport 53 -j REJECT
     ip6tables -A NSFW_RESTRICT -p tcp --dport 53 -j REJECT

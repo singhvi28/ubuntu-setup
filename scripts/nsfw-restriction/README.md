@@ -6,15 +6,17 @@ Comprehensive system-wide NSFW content filtering and tamper-resistant anti-bypas
 
 ## Features
 
-1. **CleanBrowsing Family DNS (`systemd-resolved`):**
-   - Routes all system DNS requests through CleanBrowsing Family (`185.228.168.168` and `185.228.169.168`).
-   - Automatically forces SafeSearch on Google, Bing, and DuckDuckGo at the resolver level.
+1. **CleanBrowsing Adult Filter DNS (`systemd-resolved`):**
+   - Routes all system DNS requests through CleanBrowsing Adult Filter (`185.228.168.10` and `185.228.169.11`).
+   - Blocks explicit pornography and adult content strictly.
+   - Does **not** block benign, mixed-content, or streaming sites (e.g. anime streaming, manga, Reddit, proxies).
+   - Does **not** force YouTube Restricted Mode or search engine SafeSearch.
    - Wildcard routing (`Domains=~.`) prevents interface-level DHCP override.
 
 2. **Enterprise Browser Policies:**
    - Pre-staged for **Chrome, Chromium, Brave, Microsoft Edge, Vivaldi, Opera, Firefox, LibreWolf, and Waterfox**.
-   - Locks DNS-over-HTTPS (DoH) to **OFF** so browsers cannot bypass local/system DNS.
-   - Forces Google SafeSearch ON.
+   - Locks DNS-over-HTTPS (DoH) to **OFF** so browsers cannot bypass local/system adult filtering.
+   - Normal search and YouTube playback remain fully unrestricted.
 
 3. **StevenBlack Curated Blocklist (`/etc/hosts`):**
    - 140,000+ adult domains redirected locally to `0.0.0.0`.
